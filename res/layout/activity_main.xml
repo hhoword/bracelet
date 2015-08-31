@@ -35,31 +35,41 @@
             android:id="@+id/mianRbtGroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/grap"
             android:orientation="horizontal" >
 
             <RadioButton
                 android:id="@+id/mainRbtHome"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:button="@null"
-                android:text="RadioButton" />
+                android:drawableTop="@drawable/ico_home"
+                android:gravity="center"
+                android:paddingLeft="5dp"
+                android:text="首页" />
 
             <RadioButton
                 android:id="@+id/mainRbtCricle"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:button="@null"
-                android:text="RadioButton" />
+                android:drawableTop="@drawable/ico_friendsgroup"
+                android:gravity="center"
+                android:paddingLeft="5dp"
+                android:text="圈子" />
 
             <RadioButton
                 android:id="@+id/mainRbtSetting"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:button="@null"
-                android:text="RadioButton" />
+                android:drawableTop="@drawable/ico_me"
+                android:gravity="center"
+                android:paddingLeft="5dp"
+                android:text="我" />
         </RadioGroup>
     </LinearLayout>
 

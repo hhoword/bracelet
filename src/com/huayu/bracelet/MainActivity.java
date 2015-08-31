@@ -5,6 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 
@@ -15,6 +16,9 @@ public class MainActivity extends FragmentActivity {
 	private FragmentManager fragmentManager;  
 	private FragmentTransaction fragmentTransaction;  
 	private RadioGroup mainRbtGroup;  
+	private RadioButton mainRbtHome;
+	private RadioButton mainRbtCricle;
+	private RadioButton mainRbtSetting;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
