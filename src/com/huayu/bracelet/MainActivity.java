@@ -37,7 +37,6 @@ public class MainActivity extends FragmentActivity {
 		mFragments[2] = fragmentManager.findFragmentById(R.id.fragmentMe);
 		fragmentTransaction = fragmentManager.beginTransaction()  
 				.hide(mFragments[0]).hide(mFragments[1]).hide(mFragments[2]);  
-		fragmentTransaction.show(mFragments[0]).commit();  
 		mainRbtGroup.setOnCheckedChangeListener(new OnCheckedChangeListener() {  
   
             @Override  
@@ -48,24 +47,30 @@ public class MainActivity extends FragmentActivity {
                 mainRbtHome.setTextColor(getResources().getColor(R.color.black));
                 mainRbtCricle.setTextColor(getResources().getColor(R.color.black));
                 mainRbtSetting.setTextColor(getResources().getColor(R.color.black));
+                mainRbtHome.setCompoundDrawablesWithIntrinsicBounds(null, 
+            			getResources().getDrawable(R.drawable.ico_home), null, null);
+                mainRbtCricle.setCompoundDrawablesWithIntrinsicBounds(null, 
+            			getResources().getDrawable(R.drawable.ico_friendsgroup), null, null);
+                mainRbtSetting.setCompoundDrawablesWithIntrinsicBounds(null, 
+            			getResources().getDrawable(R.drawable.ico_me), null, null);
                 switch (checkedId) {  
                 case R.id.mainRbtHome: 
                 	mainRbtHome.setTextColor(getResources().getColor(R.color.orange));
-                	mainRbtHome.setCompoundDrawables(null, 
+                	mainRbtHome.setCompoundDrawablesWithIntrinsicBounds(null, 
                 			getResources().getDrawable(R.drawable.ico_home_press), null, null);
                     fragmentTransaction.show(mFragments[0]).commit();  
                     break;  
   
                 case R.id.mainRbtCricle:  
                 	mainRbtCricle.setTextColor(getResources().getColor(R.color.orange));
-                	mainRbtCricle.setCompoundDrawables(null, 
+                	mainRbtCricle.setCompoundDrawablesWithIntrinsicBounds(null, 
                 			getResources().getDrawable(R.drawable.ico_friendsgroup_press), null, null);
                     fragmentTransaction.show(mFragments[1]).commit();  
                     break;  
   
                 case R.id.mainRbtSetting:  
                 	mainRbtSetting.setTextColor(getResources().getColor(R.color.orange));
-                	mainRbtSetting.setCompoundDrawables(null, 
+                	mainRbtSetting.setCompoundDrawablesWithIntrinsicBounds(null, 
                 			getResources().getDrawable(R.drawable.ico_me_press), null, null);
                     fragmentTransaction.show(mFragments[2]).commit();  
                     break;  
@@ -74,7 +79,10 @@ public class MainActivity extends FragmentActivity {
                     break;  
                 }  
             }  
-        });  
+        }); 
+		
+		fragmentTransaction.show(mFragments[0]).commit();  
+		mainRbtHome.setChecked(true);
 	}
 
 }
