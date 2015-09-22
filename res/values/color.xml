@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="orange">#FFA500</color>
-    <color name="grap">#EEEEE0</color>
+    <color name="grap_light">#EEEEE0</color>
     <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="red">#d93a1a</color>
+    <color name="grap">#777777</color>
 </resources>

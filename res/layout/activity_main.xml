@@ -35,7 +35,7 @@
             android:id="@+id/mianRbtGroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/grap"
+            android:background="@color/grap_light"
             android:orientation="horizontal" >
 
             <RadioButton
@@ -47,6 +47,7 @@
                 android:drawableTop="@drawable/ico_home"
                 android:gravity="center"
                 android:paddingLeft="5dp"
+                android:textColor="@color/grap"
                 android:text="首页" />
 
             <RadioButton
@@ -58,6 +59,7 @@
                 android:drawableTop="@drawable/ico_friendsgroup"
                 android:gravity="center"
                 android:paddingLeft="5dp"
+                 android:textColor="@color/grap"
                 android:text="圈子" />
 
             <RadioButton
@@ -69,6 +71,7 @@
                 android:drawableTop="@drawable/ico_me"
                 android:gravity="center"
                 android:paddingLeft="5dp"
+                 android:textColor="@color/grap"
                 android:text="我" />
         </RadioGroup>
     </LinearLayout>
