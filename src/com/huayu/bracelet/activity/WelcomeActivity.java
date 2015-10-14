@@ -1,5 +1,6 @@
 package com.huayu.bracelet.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -26,12 +27,15 @@ public class WelcomeActivity extends PActivity implements OnClickListener{
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
+		Intent intent;
 		switch (v.getId()) {
 		case R.id.welBtnLogin:
-
+			intent  = new Intent(WelcomeActivity.this, LoginActivity.class);
+			startActivity(intent);
 			break;
 		case R.id.welBtnRegister:
-
+//			intent  = new Intent(WelcomeActivity.this, re.class);
+//			startActivity(intent);
 			break;
 		default:
 			break;

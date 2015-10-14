@@ -1,4 +1,10 @@
-package com.huayu.bracelet;
+package com.huayu.bracelet.activity;
+
+import com.huayu.bracelet.R;
+import com.huayu.bracelet.R.color;
+import com.huayu.bracelet.R.drawable;
+import com.huayu.bracelet.R.id;
+import com.huayu.bracelet.R.layout;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;

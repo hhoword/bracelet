@@ -6,4 +6,6 @@
     <color name="white">#FFFFFF</color>
     <color name="red">#d93a1a</color>
     <color name="grap">#777777</color>
+    <color name="grap_tra">#dd777777</color>
+    <color name="Grayish">#9a9a9a</color>
 </resources>
