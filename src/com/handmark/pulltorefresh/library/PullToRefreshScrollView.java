@@ -66,6 +66,18 @@ public class PullToRefreshScrollView extends PullToRefreshBase<ScrollView> {
 		return mRefreshableView.getScrollY() == 0;
 	}
 
+	public boolean getReadyForPullStart(){
+		return mRefreshableView.getScrollY() == 0;
+	}
+	
+	public boolean getReadyForPullEnd() {
+		View scrollViewChild = mRefreshableView.getChildAt(0);
+		if (null != scrollViewChild) {
+			return mRefreshableView.getScrollY() >= (scrollViewChild.getHeight() - getHeight());
+		}
+		return false;
+	}
+	
 	@Override
 	protected boolean isReadyForPullEnd() {
 		View scrollViewChild = mRefreshableView.getChildAt(0);
