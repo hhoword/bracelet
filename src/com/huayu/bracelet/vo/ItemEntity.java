@@ -3,6 +3,8 @@ package com.huayu.bracelet.vo;
 import java.util.ArrayList;
 
 public class ItemEntity {
+	private String id;
+	private String uid;
 	private String avatar; // 用户头像URL
 	private String title; // 标题
 	private String content; // 内容
