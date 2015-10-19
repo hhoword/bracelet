@@ -11,15 +11,20 @@ public class HttpUtil<T> {
 
 	public  Handler handler = new Handler();
 	public static ExecutorService fixedThreadPool = Executors.newFixedThreadPool(5);
+	private Class<T> t;
 	private OnDataListener<T> dataListener;
+	private static final int post = 0;
+	private int get = 1;
 	
-	public HttpUtil() {
+	public HttpUtil(Class<T> t) {
 		// TODO Auto-generated constructor stub
+		this.t= t;
 	}
 	
 	
 	public void login(){
 //		fixedThreadPool.execute(new HttpThread(0));
+//		new HttpThread<V>(0);
 	}
 	
 	public void stop(){
@@ -33,26 +38,40 @@ public class HttpUtil<T> {
 	class HttpThread<V> implements Runnable{
 
 		public int type;
-		public Class<T> t;
+		private  V v;
 		
-		public HttpThread(int type,Class<T> t) {
+		public HttpThread(int type,V v) {
 			// TODO Auto-generated constructor stub
+			this.type = type;
+			this.v = v;
 		}
 		
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
 			SpringProxy<T, V> proxy = new SpringProxy<T, V>(MediaType.APPLICATION_JSON);
-			switch (type) {
-			case 0:
-				dataListener.onDataResult(proxy.postData(null, t, null));
-				break;
-//				dataListener.onDataResult(t);
-			default:
-				break;
-			}
+			T result = proxy.postData(null, t, v);
+			excuteResult(result);
 		}
 		
+		private void excuteResult(final T result){
+			handler.post(new Runnable() {
+				
+				@Override
+				public void run() {
+					// TODO Auto-generated method stub
+					switch (type) {
+					case post:
+						dataListener.onDataResult(result);
+						break;
+//						dataListener.onDataResult(t);
+					default:
+						break;
+					}
+				}
+			});
+		
+		}
 	}
 	
 	public interface OnDataListener<T>{
