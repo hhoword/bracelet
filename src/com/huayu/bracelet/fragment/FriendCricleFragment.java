@@ -10,11 +10,13 @@ import android.widget.ListView;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
 import com.handmark.pulltorefresh.library.PullToRefreshScrollView;
 import com.huayu.bracelet.R;
+import com.huayu.bracelet.adapter.ListItemAdapter;
 
 public class FriendCricleFragment extends Fragment{
 
 	private ListView friendLv;
 	private PullToRefreshScrollView friendPullScrollView;
+	private ListItemAdapter adapter;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -27,4 +29,9 @@ public class FriendCricleFragment extends Fragment{
 		return view;
 	}
 	
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onActivityCreated(savedInstanceState);
+	}
 }
