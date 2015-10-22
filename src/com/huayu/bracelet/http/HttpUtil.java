@@ -5,6 +5,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.springframework.http.MediaType;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import com.huayu.bracelet.activity.IOnDataListener;
 import com.huayu.bracelet.vo.ItemEntity;
@@ -31,8 +33,10 @@ public class HttpUtil {
 
 	public void getFriendCircle(String id,String index,String pagesize,
 			IOnDataListener<MessageVo<ItemEntity>> dataListener){
-		HttpThread<MessageVo<ItemEntity>, String> httpThread = 
-				new HttpThread<MessageVo<ItemEntity>, String>(0, "" );
+		MultiValueMap<String, String> data = new LinkedMultiValueMap<String, String>();
+		data.add("id", id);
+		HttpThread<MessageVo<ItemEntity>, MultiValueMap<String, String>> httpThread = 
+				new HttpThread<MessageVo<ItemEntity>, MultiValueMap<String, String>>(0, data);
 		httpThread.setDataListener(dataListener);
 		fixedThreadPool.execute(httpThread);
 	}
@@ -61,7 +65,8 @@ public class HttpUtil {
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
-			SpringProxy<T, V> proxy = new SpringProxy<T, V>(MediaType.APPLICATION_JSON);
+			//new MediaType("application","x-www-form-urlencoded");
+			SpringProxy<T, V> proxy = new SpringProxy<T, V>(MediaType.MULTIPART_FORM_DATA);
 			T result = null;
 			switch (type) {
 			case post:
