@@ -1,6 +1,7 @@
 package com.huayu.bracelet.fragment;
 
 import com.huayu.bracelet.R;
+import com.huayu.bracelet.activity.LoginActivity;
 import com.huayu.bracelet.activity.WelcomeActivity;
 
 import android.app.Activity;
@@ -32,7 +33,7 @@ public class HomeFragment extends Fragment{
 			@Override
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
-				Intent intent = new Intent(getActivity(), WelcomeActivity.class);
+				Intent intent = new Intent(getActivity(), LoginActivity.class);
 				getActivity().startActivity(intent);
 			}
 		});
