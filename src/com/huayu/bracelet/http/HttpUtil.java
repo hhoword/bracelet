@@ -1,21 +1,22 @@
 package com.huayu.bracelet.http;
 
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.springframework.core.GenericCollectionTypeResolver;
-import org.springframework.core.GenericTypeResolver;
 import org.springframework.http.MediaType;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
-import com.huayu.bracelet.activity.IOnDataListener;
-import com.huayu.bracelet.vo.ItemEntity;
-import com.huayu.bracelet.vo.MessageVo;
-import com.huayu.bracelet.vo.UserInfo;
-
 import android.os.Handler;
+
+import com.google.gson.reflect.TypeToken;
+import com.huayu.bracelet.activity.IOnDataListener;
+import com.huayu.bracelet.view.UserInfo;
+import com.huayu.bracelet.vo.HooHttpResult;
+import com.huayu.bracelet.vo.MessageVo;
 
 public class HttpUtil {
 
@@ -24,6 +25,7 @@ public class HttpUtil {
 	private static final int post = 0;
 	private static final int get = 1;
 	private String url = "http://192.168.0.109:9999";
+	private String url2 = "http://14.23.85.254:9000/my1";
 
 	public HttpUtil() {
 		// TODO Auto-generated constructor stub
@@ -37,7 +39,7 @@ public class HttpUtil {
 		data.add("pwd", pwd);
 		HttpThread<MessageVo, MultiValueMap<String, String>> httpThread = 
 				new HttpThread<MessageVo, MultiValueMap<String, String>>(
-						url+"/User/Login",post, data,MessageVo.class);
+						url+"/User/Login",post, data,MessageVo.class,MediaType.MULTIPART_FORM_DATA);
 //		GenericCollectionTypeResolver.getMapValueType((MessageVo<UserInfo>).getClass());
 //		GenericTypeResolver.resolveTypeArgument((MessageVo<UserInfo>).getClass());
 		httpThread.setDataListener(dataListener);
@@ -53,6 +55,22 @@ public class HttpUtil {
 		httpThread.setDataListener(dataListener);
 		fixedThreadPool.execute(httpThread);
 	}*/
+	
+	public void test(String username ,String pwd,
+			IOnDataListener<UserInfo> dataListener){
+		MultiValueMap<String, String> data = new LinkedMultiValueMap<String, String>();
+		data.add("mobile", username);
+		data.add("password", pwd);
+		//?mobile="+username+"&password="+pwd
+		HttpThread<UserInfo, MultiValueMap<String, String>> httpThread = 
+				new HttpThread<UserInfo, MultiValueMap<String, String>>(
+						url2+"/mobile/userLogin.do",post, data,UserInfo.class,
+						MediaType.MULTIPART_FORM_DATA);
+//		Class<HooHttpResult<UserInfo>> clazz = new TypeToken<HooHttpResult<UserInfo>>() {}.getClass();
+//		Type type = new TypeToken<HooHttpResult<UserInfo>>() {}.getClass();
+		httpThread.setDataListener(dataListener);
+		fixedThreadPool.execute(httpThread);
+	}
 
 	public void stop(){
 		handler.removeCallbacksAndMessages(null);
@@ -66,9 +84,10 @@ public class HttpUtil {
 		private Class<T> clazz;
 		private IOnDataListener<T> dataListener;
 		private String url;
+		private MediaType mediaType;
 
 		@SuppressWarnings("unchecked")
-		public HttpThread(String url,int type,V v,Class<T> clazz ) {
+		public HttpThread(String url,int type,V v,Class<T> clazz, MediaType mediaType) {
 			// TODO Auto-generated constructor stub
 			this.type = type;
 //			this.clazz =  (Class<T>) ((ParameterizedType) super.getClass()  
@@ -76,13 +95,14 @@ public class HttpUtil {
 			this.clazz = clazz;
 			this.v = v;
 			this.url = url;
+			this.mediaType = mediaType;
 		}
-
+		
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
 			//new MediaType("application","x-www-form-urlencoded");
-			SpringProxy<T, V> proxy = new SpringProxy<T, V>(MediaType.MULTIPART_FORM_DATA);
+			SpringProxy<T, V> proxy = new SpringProxy<T, V>(mediaType);
 			T result = null;
 			switch (type) {
 			case post:
@@ -114,5 +134,14 @@ public class HttpUtil {
 		}
 	}
 
-
+	abstract class Foo<X>
+	{
+	    public Class<X> getTClass()
+	    {
+	    	  ParameterizedType pt = (ParameterizedType) this.getClass().getGenericSuperclass();  
+	    	  Class <X>  tClass=(Class<X>) pt.getActualTypeArguments()[0];
+	        return tClass;
+	    }
+	}
+	
 }
