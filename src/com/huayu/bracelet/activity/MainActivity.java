@@ -6,6 +6,7 @@ import com.huayu.bracelet.R.drawable;
 import com.huayu.bracelet.R.id;
 import com.huayu.bracelet.R.layout;
 
+import android.bluetooth.BluetoothAdapter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -14,6 +15,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.Window;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 
 
@@ -26,7 +28,7 @@ public class MainActivity extends FragmentActivity {
 	private RadioButton mainRbtHome;
 	private RadioButton mainRbtCricle;
 	private RadioButton mainRbtSetting;
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -44,49 +46,49 @@ public class MainActivity extends FragmentActivity {
 		fragmentTransaction = fragmentManager.beginTransaction()  
 				.hide(mFragments[0]).hide(mFragments[1]).hide(mFragments[2]);  
 		mainRbtGroup.setOnCheckedChangeListener(new OnCheckedChangeListener() {  
-  
-            @Override  
-            public void onCheckedChanged(RadioGroup group, int checkedId) {  
-                fragmentTransaction = fragmentManager.beginTransaction()  
-                        .hide(mFragments[0]).hide(mFragments[1])  
-                        .hide(mFragments[2]);  
-                mainRbtHome.setTextColor(getResources().getColor(R.color.grap));
-                mainRbtCricle.setTextColor(getResources().getColor(R.color.grap));
-                mainRbtSetting.setTextColor(getResources().getColor(R.color.grap));
-                mainRbtHome.setCompoundDrawablesWithIntrinsicBounds(null, 
-            			getResources().getDrawable(R.drawable.ico_home), null, null);
-                mainRbtCricle.setCompoundDrawablesWithIntrinsicBounds(null, 
-            			getResources().getDrawable(R.drawable.ico_friendsgroup), null, null);
-                mainRbtSetting.setCompoundDrawablesWithIntrinsicBounds(null, 
-            			getResources().getDrawable(R.drawable.ico_me), null, null);
-                switch (checkedId) {  
-                case R.id.mainRbtHome: 
-                	mainRbtHome.setTextColor(getResources().getColor(R.color.red));
-                	mainRbtHome.setCompoundDrawablesWithIntrinsicBounds(null, 
-                			getResources().getDrawable(R.drawable.ico_home_press), null, null);
-                    fragmentTransaction.show(mFragments[0]).commit();  
-                    break;  
-  
-                case R.id.mainRbtCricle:  
-                	mainRbtCricle.setTextColor(getResources().getColor(R.color.red));
-                	mainRbtCricle.setCompoundDrawablesWithIntrinsicBounds(null, 
-                			getResources().getDrawable(R.drawable.ico_friendsgroup_press), null, null);
-                    fragmentTransaction.show(mFragments[1]).commit();  
-                    break;  
-  
-                case R.id.mainRbtSetting:  
-                	mainRbtSetting.setTextColor(getResources().getColor(R.color.red));
-                	mainRbtSetting.setCompoundDrawablesWithIntrinsicBounds(null, 
-                			getResources().getDrawable(R.drawable.ico_me_press), null, null);
-                    fragmentTransaction.show(mFragments[2]).commit();  
-                    break;  
-  
-                default:  
-                    break;  
-                }  
-            }  
-        }); 
-		
+
+			@Override  
+			public void onCheckedChanged(RadioGroup group, int checkedId) {  
+				fragmentTransaction = fragmentManager.beginTransaction()  
+						.hide(mFragments[0]).hide(mFragments[1])  
+						.hide(mFragments[2]);  
+				mainRbtHome.setTextColor(getResources().getColor(R.color.grap));
+				mainRbtCricle.setTextColor(getResources().getColor(R.color.grap));
+				mainRbtSetting.setTextColor(getResources().getColor(R.color.grap));
+				mainRbtHome.setCompoundDrawablesWithIntrinsicBounds(null, 
+						getResources().getDrawable(R.drawable.ico_home), null, null);
+				mainRbtCricle.setCompoundDrawablesWithIntrinsicBounds(null, 
+						getResources().getDrawable(R.drawable.ico_friendsgroup), null, null);
+				mainRbtSetting.setCompoundDrawablesWithIntrinsicBounds(null, 
+						getResources().getDrawable(R.drawable.ico_me), null, null);
+				switch (checkedId) {  
+				case R.id.mainRbtHome: 
+					mainRbtHome.setTextColor(getResources().getColor(R.color.red));
+					mainRbtHome.setCompoundDrawablesWithIntrinsicBounds(null, 
+							getResources().getDrawable(R.drawable.ico_home_press), null, null);
+					fragmentTransaction.show(mFragments[0]).commit();  
+					break;  
+
+				case R.id.mainRbtCricle:  
+					mainRbtCricle.setTextColor(getResources().getColor(R.color.red));
+					mainRbtCricle.setCompoundDrawablesWithIntrinsicBounds(null, 
+							getResources().getDrawable(R.drawable.ico_friendsgroup_press), null, null);
+					fragmentTransaction.show(mFragments[1]).commit();  
+					break;  
+
+				case R.id.mainRbtSetting:  
+					mainRbtSetting.setTextColor(getResources().getColor(R.color.red));
+					mainRbtSetting.setCompoundDrawablesWithIntrinsicBounds(null, 
+							getResources().getDrawable(R.drawable.ico_me_press), null, null);
+					fragmentTransaction.show(mFragments[2]).commit();  
+					break;  
+
+				default:  
+					break;  
+				}  
+			}  
+		}); 
+
 		fragmentTransaction.show(mFragments[0]).commit();  
 		mainRbtHome.setChecked(true);
 	}
