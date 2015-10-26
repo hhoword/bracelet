@@ -1,6 +1,6 @@
 package com.huayu.bracelet.vo;
 
-public class UserInfo {
+public class UserInfo extends MessageVo<UserInfo>{
 	private int id;//用户id long
 
 	private String screen_name;//:昵称 string

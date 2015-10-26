@@ -2,7 +2,7 @@ package com.huayu.bracelet.vo;
 
 import java.util.ArrayList;
 
-public class ItemEntity {
+public class ItemEntity extends MessageVo<ItemEntity>{
 	private String id;
 	private String uid;
 	private String avatar; // 用户头像URL

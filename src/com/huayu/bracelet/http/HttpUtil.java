@@ -1,22 +1,18 @@
 package com.huayu.bracelet.http;
 
 import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.springframework.core.GenericCollectionTypeResolver;
 import org.springframework.http.MediaType;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import android.os.Handler;
 
-import com.google.gson.reflect.TypeToken;
 import com.huayu.bracelet.activity.IOnDataListener;
 import com.huayu.bracelet.view.UserInfo;
-import com.huayu.bracelet.vo.HooHttpResult;
-import com.huayu.bracelet.vo.MessageVo;
+import com.huayu.bracelet.vo.ItemEntity;
 
 public class HttpUtil {
 
@@ -33,28 +29,27 @@ public class HttpUtil {
 
 
 	public void login(String username ,String pwd,
-			IOnDataListener<MessageVo> dataListener){
+			IOnDataListener<com.huayu.bracelet.vo.UserInfo> iOnDataListener){
 		MultiValueMap<String, String> data = new LinkedMultiValueMap<String, String>();
 		data.add("username", username);
 		data.add("pwd", pwd);
-		HttpThread<MessageVo, MultiValueMap<String, String>> httpThread = 
-				new HttpThread<MessageVo, MultiValueMap<String, String>>(
-						url+"/User/Login",post, data,MessageVo.class,MediaType.MULTIPART_FORM_DATA);
-//		GenericCollectionTypeResolver.getMapValueType((MessageVo<UserInfo>).getClass());
-//		GenericTypeResolver.resolveTypeArgument((MessageVo<UserInfo>).getClass());
-		httpThread.setDataListener(dataListener);
+		HttpThread<com.huayu.bracelet.vo.UserInfo, MultiValueMap<String, String>> httpThread = 
+				new HttpThread<com.huayu.bracelet.vo.UserInfo, MultiValueMap<String, String>>(
+						url+"/User/Login",post, data,com.huayu.bracelet.vo.UserInfo.class,MediaType.MULTIPART_FORM_DATA);
+		httpThread.setDataListener(iOnDataListener);
 		fixedThreadPool.execute(httpThread);
 	}
 
-	/*public void getFriendCircle(String id,String index,String pagesize,
-			IOnDataListener<MessageVo<ItemEntity>> dataListener){
+	public void getFriendCircle(String id,String index,String pagesize,
+			IOnDataListener<ItemEntity> dataListener){
 		MultiValueMap<String, String> data = new LinkedMultiValueMap<String, String>();
 		data.add("id", id);
-		HttpThread<MessageVo<ItemEntity>, MultiValueMap<String, String>> httpThread = 
-				new HttpThread<MessageVo<ItemEntity>, MultiValueMap<String, String>>("",0, data);
+		HttpThread<ItemEntity, MultiValueMap<String, String>> httpThread = 
+				new HttpThread<ItemEntity, MultiValueMap<String, String>>(
+						"",0, data,ItemEntity.class,MediaType.MULTIPART_FORM_DATA);
 		httpThread.setDataListener(dataListener);
 		fixedThreadPool.execute(httpThread);
-	}*/
+	}
 	
 	public void test(String username ,String pwd,
 			IOnDataListener<UserInfo> dataListener){
@@ -66,8 +61,6 @@ public class HttpUtil {
 				new HttpThread<UserInfo, MultiValueMap<String, String>>(
 						url2+"/mobile/userLogin.do",post, data,UserInfo.class,
 						MediaType.MULTIPART_FORM_DATA);
-//		Class<HooHttpResult<UserInfo>> clazz = new TypeToken<HooHttpResult<UserInfo>>() {}.getClass();
-//		Type type = new TypeToken<HooHttpResult<UserInfo>>() {}.getClass();
 		httpThread.setDataListener(dataListener);
 		fixedThreadPool.execute(httpThread);
 	}

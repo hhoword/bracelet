@@ -1,9 +1,9 @@
 package com.huayu.bracelet.vo;
 
-public class MessageVo{ 
+public class MessageVo<T>{ 
 
 	private String msg;
-	private UserInfo data;
+	private T data;
 	private int code;
 	public String getMsg() {
 		return msg;
@@ -11,10 +11,11 @@ public class MessageVo{
 	public void setMsg(String msg) {
 		this.msg = msg;
 	}
-	public UserInfo getData() {
+	
+	public T getData() {
 		return data;
 	}
-	public void setData(UserInfo data) {
+	public void setData(T data) {
 		this.data = data;
 	}
 	public int getCode() {

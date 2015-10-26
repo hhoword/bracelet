@@ -1,51 +1,42 @@
 package com.huayu.bracelet.activity;
 
-import java.text.DateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
-import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
-import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
 
 import com.huayu.bracelet.R;
-import com.huayu.bracelet.services.UartService;
 
 
-public class BTsearchActivity extends PActivity {
+public class BTsearchActivity extends PActivity implements OnClickListener{
 
 	private TextView SearchTvTitle;
 	private TextView SearchTvSearch;
 	private TextView SearchTvUndo;
 	private ListView Searchlv;
-	private UartService mService = null;
 	public static final String TAG = "BTsearchActivity";
 	private Map<String, Integer> devRssiValues;
 	private BluetoothAdapter mBluetoothAdapter;
@@ -53,9 +44,9 @@ public class BTsearchActivity extends PActivity {
 	private DeviceAdapter deviceAdapter;
 	private static final long SCAN_PERIOD = 10000; //10 seconds
 	private Handler mHandler;
-	private boolean mScanning;
+//	private boolean mScanning;
 
-	@Override
+	@SuppressLint("NewApi") @Override
 	protected void onCreate(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
@@ -65,11 +56,12 @@ public class BTsearchActivity extends PActivity {
 		SearchTvSearch = (TextView)findViewById(R.id.SearchTvSearch);
 		SearchTvUndo = (TextView)findViewById(R.id.SearchTvUndo);
 		Searchlv = (ListView)findViewById(R.id.Searchlv);
-		service_init();
-//		if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-//			Toast.makeText(this, "电量过低，不足支持蓝牙", Toast.LENGTH_SHORT).show();
-//			finish();
-//		}
+		SearchTvSearch.setOnClickListener(this);
+		SearchTvUndo.setOnClickListener(this);
+		if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+			Toast.makeText(this, "该手机不支持蓝牙LE", Toast.LENGTH_SHORT).show();
+			finish();
+		}
 		final BluetoothManager bluetoothManager =
 				(BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
 		mBluetoothAdapter = bluetoothManager.getAdapter();
@@ -83,38 +75,47 @@ public class BTsearchActivity extends PActivity {
 		scanLeDevice(true);
 	}
 
+	@SuppressLint("NewApi") 
 	private void scanLeDevice(final boolean enable) {
 		if (enable) {
 			// Stops scanning after a pre-defined scan period.
 			mHandler.postDelayed(new Runnable() {
-				@Override
+				@SuppressLint("NewApi") @Override
 				public void run() {
-					mScanning = false;
+//					mScanning = false;
 					mBluetoothAdapter.stopLeScan(mLeScanCallback);
 					SearchTvSearch.setVisibility(View.VISIBLE);
 
 				}
 			}, SCAN_PERIOD);
 
-			mScanning = true;
+//			mScanning = true;
+			SearchTvTitle.setText("正在搜索华宇设备");
+			SearchTvSearch.setVisibility(View.INVISIBLE);
 			mBluetoothAdapter.startLeScan(mLeScanCallback);
 		} else {
-			mScanning = false;
+//			mScanning = false;
 			mBluetoothAdapter.stopLeScan(mLeScanCallback);
 			SearchTvSearch.setVisibility(View.VISIBLE);
 		}
 
 	}
+	
+	@Override
+	protected void onStop() {
+		// TODO Auto-generated method stub
+		super.onStop();
+		scanLeDevice(false);
+	}
 
-	private BluetoothAdapter.LeScanCallback mLeScanCallback =
-			new BluetoothAdapter.LeScanCallback() {
+	@SuppressLint("NewApi") 
+	private BluetoothAdapter.LeScanCallback mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
 
 		@Override
 		public void onLeScan(final BluetoothDevice device, final int rssi, byte[] scanRecord) {
 			runOnUiThread(new Runnable() {
 				@Override
 				public void run() {
-
 					runOnUiThread(new Runnable() {
 						@Override
 						public void run() {
@@ -136,35 +137,29 @@ public class BTsearchActivity extends PActivity {
 				break;
 			}
 		}
-
-
 		devRssiValues.put(device.getAddress(), rssi);
 		if (!deviceFound) {
 			deviceList.add(device);
 //			mEmptyList.setVisibility(View.GONE);
-
-
-
-
+			SearchTvSearch.setVisibility(View.INVISIBLE);
 			deviceAdapter.notifyDataSetChanged();
+		}else{
+			SearchTvTitle.setText("未找到华宇设备");
+			SearchTvSearch.setVisibility(View.VISIBLE);
 		}
 	}
 
 	private OnItemClickListener mDeviceClickListener = new OnItemClickListener() {
 
-		@Override
+		@SuppressLint("NewApi") @Override
 		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-			BluetoothDevice device = deviceList.get(position);
 			mBluetoothAdapter.stopLeScan(mLeScanCallback);
-
 			Bundle b = new Bundle();
 			b.putString(BluetoothDevice.EXTRA_DEVICE, deviceList.get(position).getAddress());
-
 			Intent result = new Intent();
 			result.putExtras(b);
 			setResult(Activity.RESULT_OK, result);
 			finish();
-
 		}
 	};
 
@@ -239,112 +234,18 @@ public class BTsearchActivity extends PActivity {
 		}
 	}
 
-	private ServiceConnection mServiceConnection = new ServiceConnection() {
-		public void onServiceConnected(ComponentName className, IBinder rawBinder) {
-			mService = ((UartService.LocalBinder) rawBinder).getService();
-			Log.d(TAG, "onServiceConnected mService= " + mService);
-			if (!mService.initialize()) {
-				Log.e(TAG, "Unable to initialize Bluetooth");
-				finish();
-			}
 
+	@Override
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		switch (v.getId()) {
+		case R.id.SearchTvSearch:
+			scanLeDevice(true);
+			break;
+
+		default:
+			break;
 		}
-
-		public void onServiceDisconnected(ComponentName classname) {
-			////     mService.disconnect(mDevice);
-			mService = null;
-		}
-	};
-
-	private final BroadcastReceiver UARTStatusChangeReceiver = new BroadcastReceiver() {
-
-		public void onReceive(Context context, Intent intent) {
-			String action = intent.getAction();
-
-			final Intent mIntent = intent;
-			//*********************//
-			if (action.equals(UartService.ACTION_GATT_CONNECTED)) {
-				runOnUiThread(new Runnable() {
-					public void run() {
-						String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
-						Log.d(TAG, "UART_CONNECT_MSG");
-						//						btnConnectDisconnect.setText("Disconnect");
-						//						edtMessage.setEnabled(true);
-						//						btnSend.setEnabled(true);
-						//						((TextView) findViewById(R.id.deviceName)).setText(mDevice.getName()+ " - ready");
-						//						listAdapter.add("["+currentDateTimeString+"] Connected to: "+ mDevice.getName());
-						//						messageListView.smoothScrollToPosition(listAdapter.getCount() - 1);
-						//						mState = UART_PROFILE_CONNECTED;
-					}
-				});
-			}
-
-			//*********************//
-			if (action.equals(UartService.ACTION_GATT_DISCONNECTED)) {
-				runOnUiThread(new Runnable() {
-					public void run() {
-						String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
-						Log.d(TAG, "UART_DISCONNECT_MSG");
-						//						btnConnectDisconnect.setText("Connect");
-						//						edtMessage.setEnabled(false);
-						//						btnSend.setEnabled(false);
-						//						((TextView) findViewById(R.id.deviceName)).setText("Not Connected");
-						//						listAdapter.add("["+currentDateTimeString+"] Disconnected to: "+ mDevice.getName());
-						//						mState = UART_PROFILE_DISCONNECTED;
-						//						mService.close();
-						//setUiState();
-
-					}
-				});
-			}
-
-
-			//*********************//
-			if (action.equals(UartService.ACTION_GATT_SERVICES_DISCOVERED)) {
-				mService.enableTXNotification();
-			}
-			//*********************//
-			if (action.equals(UartService.ACTION_DATA_AVAILABLE)) {
-
-				final byte[] txValue = intent.getByteArrayExtra(UartService.EXTRA_DATA);
-				runOnUiThread(new Runnable() {
-					public void run() {
-						try {
-							String text = new String(txValue, "UTF-8");
-							String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
-							//							listAdapter.add("["+currentDateTimeString+"] RX: "+text);
-							//                    	 	messageListView.smoothScrollToPosition(listAdapter.getCount() - 1);
-						} catch (Exception e) {
-							Log.e(TAG, e.toString());
-						}
-					}
-				});
-			}
-			//*********************//
-			if (action.equals(UartService.DEVICE_DOES_NOT_SUPPORT_UART)){
-				Toast.makeText(BTsearchActivity.this, "蓝牙不可用", Toast.LENGTH_LONG).show();
-				mService.disconnect();
-			}
-
-
-		}
-	};
-
-
-	private void service_init() {
-		Intent bindIntent = new Intent(this, UartService.class);
-		bindService(bindIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
-
-		LocalBroadcastManager.getInstance(this).registerReceiver(UARTStatusChangeReceiver, makeGattUpdateIntentFilter());
-	}
-	private static IntentFilter makeGattUpdateIntentFilter() {
-		final IntentFilter intentFilter = new IntentFilter();
-		intentFilter.addAction(UartService.ACTION_GATT_CONNECTED);
-		intentFilter.addAction(UartService.ACTION_GATT_DISCONNECTED);
-		intentFilter.addAction(UartService.ACTION_GATT_SERVICES_DISCOVERED);
-		intentFilter.addAction(UartService.ACTION_DATA_AVAILABLE);
-		intentFilter.addAction(UartService.DEVICE_DOES_NOT_SUPPORT_UART);
-		return intentFilter;
 	}
 
 }

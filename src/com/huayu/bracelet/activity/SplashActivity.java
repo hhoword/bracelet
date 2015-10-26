@@ -1,21 +1,16 @@
 package com.huayu.bracelet.activity;
 
 import android.bluetooth.BluetoothAdapter;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
-import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
+import android.text.TextUtils;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.huayu.bracelet.BaseApplication;
 import com.huayu.bracelet.R;
-import com.huayu.bracelet.services.UartService;
+import com.huayu.bracelet.vo.UserInfo;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -51,18 +46,24 @@ public class SplashActivity extends PActivity{
 			public void run() {
 				mBtAdapter = BluetoothAdapter.getDefaultAdapter();
 				Intent mainIntent;
-				if (mBtAdapter == null) {
-					Toast.makeText(SplashActivity.this, "蓝牙不可用", Toast.LENGTH_LONG).show();
-					mainIntent = new Intent(SplashActivity.this, MainActivity.class);
+				UserInfo info = BaseApplication.getInstance().getUserInfo();
+				if(TextUtils.isEmpty(info.getData().getName())){
+					mainIntent = new Intent(SplashActivity.this, LoginActivity.class);
 					SplashActivity.this.startActivity(mainIntent);
 				}else{
-					if(mBtAdapter.isEnabled()){
-						mainIntent = new Intent(SplashActivity.this, BTsearchActivity.class);
-						SplashActivity.this.startActivity(mainIntent);
-					}else{
+					if (mBtAdapter == null) {
+						Toast.makeText(SplashActivity.this, "蓝牙不可用", Toast.LENGTH_LONG).show();
 						mainIntent = new Intent(SplashActivity.this, MainActivity.class);
 						SplashActivity.this.startActivity(mainIntent);
-						Toast.makeText(SplashActivity.this, "蓝牙未打开", Toast.LENGTH_LONG).show();
+					}else{
+						if(mBtAdapter.isEnabled()){
+							mainIntent = new Intent(SplashActivity.this, BTsearchActivity.class);
+							SplashActivity.this.startActivity(mainIntent);
+						}else{
+							mainIntent = new Intent(SplashActivity.this, MainActivity.class);
+							SplashActivity.this.startActivity(mainIntent);
+							Toast.makeText(SplashActivity.this, "蓝牙未打开", Toast.LENGTH_LONG).show();
+						}
 					}
 				}
 				SplashActivity.this.finish();

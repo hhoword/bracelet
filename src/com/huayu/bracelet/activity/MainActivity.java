@@ -1,12 +1,5 @@
 package com.huayu.bracelet.activity;
 
-import com.huayu.bracelet.R;
-import com.huayu.bracelet.R.color;
-import com.huayu.bracelet.R.drawable;
-import com.huayu.bracelet.R.id;
-import com.huayu.bracelet.R.layout;
-
-import android.bluetooth.BluetoothAdapter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -15,8 +8,9 @@ import android.support.v4.app.FragmentTransaction;
 import android.view.Window;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.Toast;
 import android.widget.RadioGroup.OnCheckedChangeListener;
+
+import com.huayu.bracelet.R;
 
 
 public class MainActivity extends FragmentActivity {
@@ -93,4 +87,5 @@ public class MainActivity extends FragmentActivity {
 		mainRbtHome.setChecked(true);
 	}
 
+	
 }
