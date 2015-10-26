@@ -1,6 +1,5 @@
 package com.huayu.bracelet.http;
 
-import java.lang.reflect.ParameterizedType;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -13,6 +12,7 @@ import android.os.Handler;
 import com.huayu.bracelet.activity.IOnDataListener;
 import com.huayu.bracelet.view.UserInfo;
 import com.huayu.bracelet.vo.ItemEntity;
+import com.huayu.bracelet.vo.UserData;
 
 public class HttpUtil {
 
@@ -20,7 +20,7 @@ public class HttpUtil {
 	public static ExecutorService fixedThreadPool = Executors.newFixedThreadPool(5);
 	private static final int post = 0;
 	private static final int get = 1;
-	private String url = "http://192.168.0.109:9999";
+	private String url = "http://192.168.0.109:54242";
 	private String url2 = "http://14.23.85.254:9000/my1";
 
 	public HttpUtil() {
@@ -29,17 +29,29 @@ public class HttpUtil {
 
 
 	public void login(String username ,String pwd,
-			IOnDataListener<com.huayu.bracelet.vo.UserInfo> iOnDataListener){
+			IOnDataListener<UserData> iOnDataListener){
 		MultiValueMap<String, String> data = new LinkedMultiValueMap<String, String>();
 		data.add("username", username);
 		data.add("pwd", pwd);
-		HttpThread<com.huayu.bracelet.vo.UserInfo, MultiValueMap<String, String>> httpThread = 
-				new HttpThread<com.huayu.bracelet.vo.UserInfo, MultiValueMap<String, String>>(
-						url+"/User/Login",post, data,com.huayu.bracelet.vo.UserInfo.class,MediaType.MULTIPART_FORM_DATA);
+		HttpThread<UserData, MultiValueMap<String, String>> httpThread = 
+				new HttpThread<UserData, MultiValueMap<String, String>>(
+						url+"/User/Login",post, data,UserData.class,MediaType.MULTIPART_FORM_DATA);
 		httpThread.setDataListener(iOnDataListener);
 		fixedThreadPool.execute(httpThread);
 	}
 
+	public void register(String username ,String pwd,
+			IOnDataListener<UserData> iOnDataListener){
+		MultiValueMap<String, String> data = new LinkedMultiValueMap<String, String>();
+		data.add("username", username);
+		data.add("pwd", pwd);
+		HttpThread<UserData, MultiValueMap<String, String>> httpThread = 
+				new HttpThread<UserData, MultiValueMap<String, String>>(
+						url+"User/Register",post, data,UserData.class,MediaType.MULTIPART_FORM_DATA);
+		httpThread.setDataListener(iOnDataListener);
+		fixedThreadPool.execute(httpThread);
+	}
+	
 	public void getFriendCircle(String id,String index,String pagesize,
 			IOnDataListener<ItemEntity> dataListener){
 		MultiValueMap<String, String> data = new LinkedMultiValueMap<String, String>();
@@ -125,16 +137,6 @@ public class HttpUtil {
 		public void setDataListener(IOnDataListener<T> dataListener){
 			this.dataListener = dataListener;
 		}
-	}
-
-	abstract class Foo<X>
-	{
-	    public Class<X> getTClass()
-	    {
-	    	  ParameterizedType pt = (ParameterizedType) this.getClass().getGenericSuperclass();  
-	    	  Class <X>  tClass=(Class<X>) pt.getActualTypeArguments()[0];
-	        return tClass;
-	    }
 	}
 	
 }

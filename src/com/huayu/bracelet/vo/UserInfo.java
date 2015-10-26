@@ -1,11 +1,13 @@
 package com.huayu.bracelet.vo;
 
-public class UserInfo extends MessageVo<UserInfo>{
+public class UserInfo {
 	private int id;//用户id long
 
 	private String screen_name;//:昵称 string
 
 	private String name;//:用户名 string
+	
+	private String pwd;//密码
 
 	private String  province;//:身份编号 int
 
@@ -30,6 +32,7 @@ public class UserInfo extends MessageVo<UserInfo>{
 	private int height;//:身高 float
 
 	private int weight;//:体重 float
+	
 
 	public int getId() {
 		return id;
@@ -151,6 +154,15 @@ public class UserInfo extends MessageVo<UserInfo>{
 	public void setWeight(int weight) {
 		this.weight = weight;
 	}
+
+	public String getPwd() {
+		return pwd;
+	}
+
+	public void setPwd(String pwd) {
+		this.pwd = pwd;
+	}
+
 	
 	
 }

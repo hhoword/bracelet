@@ -1,5 +1,6 @@
 package com.huayu.bracelet.activity;
 
+import android.bluetooth.BluetoothDevice;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -35,10 +36,14 @@ public class MainActivity extends FragmentActivity {
 		mFragments = new Fragment[3];  
 		fragmentManager = getSupportFragmentManager();  
 		mFragments[0] = fragmentManager.findFragmentById(R.id.fragmentHome);  
+//		Bundle bundle = new Bundle();
+//		bundle.putString(BluetoothDevice.EXTRA_DEVICE, 
+//				getIntent().getStringExtra(BluetoothDevice.EXTRA_DEVICE));
+//		mFragments[0].setArguments(bundle);
 		mFragments[1] = fragmentManager.findFragmentById(R.id.fragmentFriend);  
 		mFragments[2] = fragmentManager.findFragmentById(R.id.fragmentMe);
 		fragmentTransaction = fragmentManager.beginTransaction()  
-				.hide(mFragments[0]).hide(mFragments[1]).hide(mFragments[2]);  
+				.hide(mFragments[0]).hide(mFragments[1]).hide(mFragments[2]); 
 		mainRbtGroup.setOnCheckedChangeListener(new OnCheckedChangeListener() {  
 
 			@Override  

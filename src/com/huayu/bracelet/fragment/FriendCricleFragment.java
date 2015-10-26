@@ -46,7 +46,7 @@ public class FriendCricleFragment extends Fragment{
 
 				if (friendPullScrollView.getReadyForPullEnd()) {//上拉加载更多
 				}
-//				friendPullScrollView.onRefreshComplete();
+				friendPullScrollView.onRefreshComplete();
 			}
 		});
 		return view;

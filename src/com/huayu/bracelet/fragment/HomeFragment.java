@@ -1,9 +1,11 @@
 package com.huayu.bracelet.fragment;
 
+import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.util.Date;
 
-import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -19,43 +21,37 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.huayu.bracelet.R;
-import com.huayu.bracelet.activity.LoginActivity;
 import com.huayu.bracelet.services.UartService;
 
-public class HomeFragment extends Fragment{
-	
+public class HomeFragment extends Fragment implements OnClickListener{
+
 	public static final String TAG = "HomeFragment";
 	private UartService mService = null;
+	private BluetoothDevice mDevice = null;
+	private TextView homeTvSync;
 
-	@Override
-	public void onAttach(Activity activity) {
-		// TODO Auto-generated method stub
-		super.onAttach(activity);
-		service_init();
-	}
-	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		View view = inflater.inflate(R.layout.framgent_home, null);
-		Button button = (Button) view.findViewById(R.id.button1);
-		button.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				Intent intent = new Intent(getActivity(), LoginActivity.class);
-				getActivity().startActivity(intent);
-			}
-		});
+		homeTvSync = (TextView)view.findViewById(R.id.homeTvSync);
+		homeTvSync.setOnClickListener(this);
 		return view;
 	}
-	
+
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		// TODO Auto-generated method stub
+		super.onActivityCreated(savedInstanceState);
+		service_init();
+
+	}
+
 	private ServiceConnection mServiceConnection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName className, IBinder rawBinder) {
 			mService = ((UartService.LocalBinder) rawBinder).getService();
@@ -64,6 +60,24 @@ public class HomeFragment extends Fragment{
 				Log.e(TAG, "Unable to initialize Bluetooth");
 				getActivity().finish();
 			}
+			String deviceAddress = getActivity().getIntent().getStringExtra(BluetoothDevice.EXTRA_DEVICE);
+			if(deviceAddress!=null){
+				mDevice = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(deviceAddress);
+				Log.d(TAG, "... onActivityResultdevice.address==" + mDevice + "mserviceValue" + mService);
+				mService.connect(deviceAddress);
+//				String message = "#BF,request,ID,时间,BF#";
+//				byte[] value;
+//				try {
+//					//send data to service
+//					value = message.getBytes("UTF-8");
+//					mService.writeRXCharacteristic(value);
+//					//Update the log with time stamp
+//				} catch (UnsupportedEncodingException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+			}
+			
 
 		}
 
@@ -150,7 +164,7 @@ public class HomeFragment extends Fragment{
 
 	private void service_init() {
 		Intent bindIntent = new Intent(getActivity(), UartService.class);
-		getActivity().bindService(bindIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
+		getActivity().getApplicationContext().bindService(bindIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
 		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(UARTStatusChangeReceiver, makeGattUpdateIntentFilter());
 	}
 	private static IntentFilter makeGattUpdateIntentFilter() {
@@ -162,5 +176,35 @@ public class HomeFragment extends Fragment{
 		intentFilter.addAction(UartService.DEVICE_DOES_NOT_SUPPORT_UART);
 		return intentFilter;
 	}
+
+	@Override
+	public void onDestroy() {
+		// TODO Auto-generated method stub
+		super.onDestroy();
+		mService.disconnect();
+	}
 	
+	@Override
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		switch (v.getId()) {
+		case R.id.homeTvSync:
+//			String message = "#BF,request,ID,时间,BF#";
+//        	byte[] value;
+//			try {
+//				//send data to service
+//				value = message.getBytes("UTF-8");
+//				mService.writeRXCharacteristic(value);
+//				//Update the log with time stamp
+//			} catch (UnsupportedEncodingException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+			break;
+
+		default:
+			break;
+		}
+	}
+
 }

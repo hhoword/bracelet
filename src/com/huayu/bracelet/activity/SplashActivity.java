@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.huayu.bracelet.BaseApplication;
 import com.huayu.bracelet.R;
+import com.huayu.bracelet.vo.UserData;
 import com.huayu.bracelet.vo.UserInfo;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -46,8 +47,8 @@ public class SplashActivity extends PActivity{
 			public void run() {
 				mBtAdapter = BluetoothAdapter.getDefaultAdapter();
 				Intent mainIntent;
-				UserInfo info = BaseApplication.getInstance().getUserInfo();
-				if(TextUtils.isEmpty(info.getData().getName())){
+				UserData info = BaseApplication.getInstance().getUserData();
+				if(info==null||TextUtils.isEmpty(info.getData().getUserinfo().getName())){
 					mainIntent = new Intent(SplashActivity.this, LoginActivity.class);
 					SplashActivity.this.startActivity(mainIntent);
 				}else{

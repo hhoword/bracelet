@@ -4,6 +4,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.http.ContentCodingType;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -110,6 +111,9 @@ public class SpringProxy<T,V> {
 		//设置传输媒体类型
 		requestHeaders.setContentType(contentType);
 
+//		requestHeaders.add("Content-Type", "charset=utf-8");
+		requestHeaders.setContentEncoding(ContentCodingType.valueOf("utf-8"));
+
 		//设置接收媒体类型
 		List<MediaType> listtype = new ArrayList<MediaType>();
 		listtype.add(MediaType.TEXT_PLAIN);
@@ -127,8 +131,8 @@ public class SpringProxy<T,V> {
 	private static synchronized RestTemplate getRestTemplate(){
 		if(restTemplate == null){
 			HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
-			requestFactory.setReadTimeout(5000);
-			requestFactory.setConnectTimeout(5000);
+			requestFactory.setReadTimeout(30000);
+			requestFactory.setConnectTimeout(30000);
 			restTemplate = new RestTemplate(true);
 			restTemplate.setRequestFactory(requestFactory);
 			restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());

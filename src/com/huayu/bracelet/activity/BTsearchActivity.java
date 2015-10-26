@@ -25,6 +25,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,6 +45,7 @@ public class BTsearchActivity extends PActivity implements OnClickListener{
 	private DeviceAdapter deviceAdapter;
 	private static final long SCAN_PERIOD = 10000; //10 seconds
 	private Handler mHandler;
+	private ProgressBar SearchProgress;
 //	private boolean mScanning;
 
 	@SuppressLint("NewApi") @Override
@@ -56,6 +58,7 @@ public class BTsearchActivity extends PActivity implements OnClickListener{
 		SearchTvSearch = (TextView)findViewById(R.id.SearchTvSearch);
 		SearchTvUndo = (TextView)findViewById(R.id.SearchTvUndo);
 		Searchlv = (ListView)findViewById(R.id.Searchlv);
+		SearchProgress = (ProgressBar)findViewById(R.id.SearchProgress);
 		SearchTvSearch.setOnClickListener(this);
 		SearchTvUndo.setOnClickListener(this);
 		if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
@@ -85,18 +88,26 @@ public class BTsearchActivity extends PActivity implements OnClickListener{
 //					mScanning = false;
 					mBluetoothAdapter.stopLeScan(mLeScanCallback);
 					SearchTvSearch.setVisibility(View.VISIBLE);
-
+					if(deviceList.size()==0){
+						SearchProgress.setVisibility(View.GONE);
+						SearchTvTitle.setText("未找到华宇设备");
+					}else if(deviceList.size()>0){
+						SearchTvTitle.setText("连接华宇设备");
+						SearchProgress.setVisibility(View.GONE);
+					}
 				}
 			}, SCAN_PERIOD);
 
 //			mScanning = true;
 			SearchTvTitle.setText("正在搜索华宇设备");
 			SearchTvSearch.setVisibility(View.INVISIBLE);
+			SearchProgress.setVisibility(View.VISIBLE);
 			mBluetoothAdapter.startLeScan(mLeScanCallback);
 		} else {
 //			mScanning = false;
 			mBluetoothAdapter.stopLeScan(mLeScanCallback);
 			SearchTvSearch.setVisibility(View.VISIBLE);
+			SearchProgress.setVisibility(View.GONE);
 		}
 
 	}
@@ -140,12 +151,8 @@ public class BTsearchActivity extends PActivity implements OnClickListener{
 		devRssiValues.put(device.getAddress(), rssi);
 		if (!deviceFound) {
 			deviceList.add(device);
-//			mEmptyList.setVisibility(View.GONE);
-			SearchTvSearch.setVisibility(View.INVISIBLE);
-			deviceAdapter.notifyDataSetChanged();
-		}else{
-			SearchTvTitle.setText("未找到华宇设备");
 			SearchTvSearch.setVisibility(View.VISIBLE);
+			deviceAdapter.notifyDataSetChanged();
 		}
 	}
 
@@ -156,9 +163,10 @@ public class BTsearchActivity extends PActivity implements OnClickListener{
 			mBluetoothAdapter.stopLeScan(mLeScanCallback);
 			Bundle b = new Bundle();
 			b.putString(BluetoothDevice.EXTRA_DEVICE, deviceList.get(position).getAddress());
-			Intent result = new Intent();
-			result.putExtras(b);
-			setResult(Activity.RESULT_OK, result);
+			Intent intent = new Intent(BTsearchActivity.this,MainActivity.class);
+			intent.putExtras(b);
+			startActivity(intent);
+//			setResult(Activity.RESULT_OK, result);
 			finish();
 		}
 	};
@@ -242,7 +250,11 @@ public class BTsearchActivity extends PActivity implements OnClickListener{
 		case R.id.SearchTvSearch:
 			scanLeDevice(true);
 			break;
-
+		case R.id.SearchTvUndo:
+			Intent intent = new Intent(BTsearchActivity.this, MainActivity.class);
+			startActivity(intent);
+			finish();
+			break;
 		default:
 			break;
 		}

@@ -2,6 +2,7 @@ package com.huayu.bracelet;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.huayu.bracelet.vo.UserData;
 import com.huayu.bracelet.vo.UserInfo;
 
 import android.app.Application;
@@ -32,16 +33,16 @@ public class BaseApplication extends Application{
 		editor = sp.edit();
 	}
 	
-	public void setUserInfo(UserInfo info){
+	public void setUserInfo(UserData info){
 		String user = gson.toJson(info);
 		editor.putString(USERINFO, user);
 		editor.commit();
 	}
 	
-	public UserInfo getUserInfo() {
-		UserInfo info = null;
+	public UserData getUserData() {
+		UserData info = null;
 		String user = sp.getString(USERINFO, "");
-		info = gson.fromJson(user, new TypeToken<UserInfo>(){}.getType());
+		info = gson.fromJson(user, new TypeToken<UserData>(){}.getType());
 		return info;
 	}
 }

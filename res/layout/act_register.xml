@@ -10,7 +10,7 @@
         android:background="@color/red" >
 
         <ImageView
-            android:id="@+id/logIvBack"
+            android:id="@+id/regIvBack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:padding="10dp"
@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:gravity="center_horizontal"
-            android:text="账户登录"
+            android:text="账户注册"
             android:textColor="@color/white"
             android:textSize="18sp" />
     </RelativeLayout>
@@ -50,14 +50,15 @@
                 android:id="@+id/textView2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="用户名：" />
+                android:text="用  户  名：" />
 
             <EditText
-                android:id="@+id/loginEdUser"
+                android:id="@+id/regEdUser"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
+                android:inputType="textPersonName"
                 android:ems="10" />
         </LinearLayout>
 
@@ -82,10 +83,10 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="密    码：" />
+                android:text="  密    码  ：" />
 
             <EditText
-                android:id="@+id/loginEdPW"
+                android:id="@+id/regEdPW"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -101,23 +102,47 @@
             android:layout_marginRight="10dp"
             android:background="@color/grap" />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:padding="10dp" >
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/passwd_icon" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="确认密码：" />
+
+            <EditText
+                android:id="@+id/regEdRePW"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:inputType="textPassword"
+                android:background="@android:color/transparent"
+                android:ems="10" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@color/grap" />
+
         <Button
-            android:id="@+id/loginBtnLogin"
+            android:id="@+id/regBtnRegister"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:background="@drawable/bg_btn_orange"
-            android:text="登录"
+            android:text="注册"
             android:textColor="@color/white" />
-
-        <TextView
-            android:id="@+id/loginTvRegister"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textColor="@color/orange"
-            android:layout_marginTop="30dp"
-            android:text="注册一个新的帐号" />
-
     </LinearLayout>
 
 </LinearLayout>
