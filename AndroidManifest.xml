@@ -46,6 +46,7 @@
 
         <activity android:name=".activity.RegisterActivity" >
         </activity>
+        <activity android:name=".activity.ImageBrowseActivity"></activity>
     </application>
 
 </manifest>
