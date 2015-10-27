@@ -62,7 +62,9 @@ public class BTsearchActivity extends PActivity implements OnClickListener{
 		SearchTvSearch.setOnClickListener(this);
 		SearchTvUndo.setOnClickListener(this);
 		if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-			Toast.makeText(this, "该手机不支持蓝牙LE", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, "该手机不支持蓝牙4.0", Toast.LENGTH_SHORT).show();
+			Intent intent = new Intent(this, MainActivity.class);
+			startActivity(intent);
 			finish();
 		}
 		final BluetoothManager bluetoothManager =
@@ -80,6 +82,7 @@ public class BTsearchActivity extends PActivity implements OnClickListener{
 
 	@SuppressLint("NewApi") 
 	private void scanLeDevice(final boolean enable) {
+		deviceList.clear();
 		if (enable) {
 			// Stops scanning after a pre-defined scan period.
 			mHandler.postDelayed(new Runnable() {

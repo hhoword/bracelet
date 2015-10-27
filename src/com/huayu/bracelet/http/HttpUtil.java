@@ -10,9 +10,10 @@ import org.springframework.util.MultiValueMap;
 import android.os.Handler;
 
 import com.huayu.bracelet.activity.IOnDataListener;
-import com.huayu.bracelet.view.UserInfo;
 import com.huayu.bracelet.vo.ItemEntity;
+import com.huayu.bracelet.vo.ListUserZoonInfo;
 import com.huayu.bracelet.vo.UserData;
+import com.huayu.bracelet.vo.UserZoonInfo;
 
 public class HttpUtil {
 
@@ -21,6 +22,7 @@ public class HttpUtil {
 	private static final int post = 0;
 	private static final int get = 1;
 	private String url = "http://192.168.0.109:54242";
+//	private String url = "http://203.195.137.93:54242";
 	private String url2 = "http://14.23.85.254:9000/my1";
 
 	public HttpUtil() {
@@ -53,17 +55,19 @@ public class HttpUtil {
 	}
 	
 	public void getFriendCircle(String id,String index,String pagesize,
-			IOnDataListener<ItemEntity> dataListener){
+			IOnDataListener<ListUserZoonInfo> dataListener){
 		MultiValueMap<String, String> data = new LinkedMultiValueMap<String, String>();
-		data.add("id", id);
-		HttpThread<ItemEntity, MultiValueMap<String, String>> httpThread = 
-				new HttpThread<ItemEntity, MultiValueMap<String, String>>(
-						"",0, data,ItemEntity.class,MediaType.MULTIPART_FORM_DATA);
+		data.add("userid", id);
+		data.add("page", index);
+		data.add("pagesize", pagesize);
+		HttpThread<ListUserZoonInfo, MultiValueMap<String, String>> httpThread = 
+				new HttpThread<ListUserZoonInfo, MultiValueMap<String, String>>(
+						url+"/UserZoon/GetZoonByPage",0, data,ListUserZoonInfo.class,MediaType.MULTIPART_FORM_DATA);
 		httpThread.setDataListener(dataListener);
 		fixedThreadPool.execute(httpThread);
 	}
 	
-	public void test(String username ,String pwd,
+	/*public void test(String username ,String pwd,
 			IOnDataListener<UserInfo> dataListener){
 		MultiValueMap<String, String> data = new LinkedMultiValueMap<String, String>();
 		data.add("mobile", username);
@@ -75,7 +79,7 @@ public class HttpUtil {
 						MediaType.MULTIPART_FORM_DATA);
 		httpThread.setDataListener(dataListener);
 		fixedThreadPool.execute(httpThread);
-	}
+	}*/
 
 	public void stop(){
 		handler.removeCallbacksAndMessages(null);

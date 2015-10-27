@@ -2,6 +2,7 @@ package com.huayu.bracelet.fragment;
 
 import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import android.bluetooth.BluetoothAdapter;
@@ -65,19 +66,19 @@ public class HomeFragment extends Fragment implements OnClickListener{
 				mDevice = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(deviceAddress);
 				Log.d(TAG, "... onActivityResultdevice.address==" + mDevice + "mserviceValue" + mService);
 				mService.connect(deviceAddress);
-//				String message = "#BF,request,ID,时间,BF#";
-//				byte[] value;
-//				try {
-//					//send data to service
-//					value = message.getBytes("UTF-8");
-//					mService.writeRXCharacteristic(value);
-//					//Update the log with time stamp
-//				} catch (UnsupportedEncodingException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
+				//				String message = "#BF,request,ID,时间,BF#";
+				//				byte[] value;
+				//				try {
+				//					//send data to service
+				//					value = message.getBytes("UTF-8");
+				//					mService.writeRXCharacteristic(value);
+				//					//Update the log with time stamp
+				//				} catch (UnsupportedEncodingException e) {
+				//					// TODO Auto-generated catch block
+				//					e.printStackTrace();
+				//				}
 			}
-			
+
 
 		}
 
@@ -145,6 +146,7 @@ public class HomeFragment extends Fragment implements OnClickListener{
 							String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
 							//							listAdapter.add("["+currentDateTimeString+"] RX: "+text);
 							//                    	 	messageListView.smoothScrollToPosition(listAdapter.getCount() - 1);
+							Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT).show();
 						} catch (Exception e) {
 							Log.e(TAG, e.toString());
 						}
@@ -164,7 +166,7 @@ public class HomeFragment extends Fragment implements OnClickListener{
 
 	private void service_init() {
 		Intent bindIntent = new Intent(getActivity(), UartService.class);
-		getActivity().getApplicationContext().bindService(bindIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
+		getActivity().bindService(bindIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
 		LocalBroadcastManager.getInstance(getActivity()).registerReceiver(UARTStatusChangeReceiver, makeGattUpdateIntentFilter());
 	}
 	private static IntentFilter makeGattUpdateIntentFilter() {
@@ -181,25 +183,35 @@ public class HomeFragment extends Fragment implements OnClickListener{
 	public void onDestroy() {
 		// TODO Auto-generated method stub
 		super.onDestroy();
-		mService.disconnect();
+		try {
+			LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(UARTStatusChangeReceiver);
+		} catch (Exception ignore) {
+			Log.e(TAG, ignore.toString());
+		} 
+		getActivity().unbindService(mServiceConnection);
+		mService.stopSelf();
+		mService= null;
 	}
-	
+
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
 		switch (v.getId()) {
 		case R.id.homeTvSync:
-//			String message = "#BF,request,ID,时间,BF#";
-//        	byte[] value;
-//			try {
-//				//send data to service
-//				value = message.getBytes("UTF-8");
-//				mService.writeRXCharacteristic(value);
-//				//Update the log with time stamp
-//			} catch (UnsupportedEncodingException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
+			Date d = new Date();  
+			SimpleDateFormat ss = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");//12小时制  
+			System.out.println(ss.format(d));  
+			String message = "#BF,request,123456,"+ss.format(d)+",BF#";
+			byte[] value;
+			try {
+				//send data to service
+				value = message.getBytes("UTF-8");
+				mService.writeRXCharacteristic(value);
+				//Update the log with time stamp
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			break;
 
 		default:

@@ -21,10 +21,10 @@
             android:textSize="18sp" />
     </LinearLayout>
 
-    <com.handmark.pulltorefresh.library.PullToRefreshScrollView
+   <!--  <com.handmark.pulltorefresh.library.PullToRefreshScrollView
         android:id="@+id/friendPullScrollView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" >
+        android:layout_height="match_parent" > -->
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -189,6 +189,6 @@
                 android:layout_height="match_parent" >
             </ListView>
         </LinearLayout>
-    </com.handmark.pulltorefresh.library.PullToRefreshScrollView>
-
+  <!--   </com.handmark.pulltorefresh.library.PullToRefreshScrollView>
+ -->
 </LinearLayout>

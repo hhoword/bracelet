@@ -1,6 +1,7 @@
 package com.huayu.bracelet.adapter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
@@ -16,7 +17,7 @@ import android.widget.TextView;
 import com.huayu.bracelet.R;
 import com.huayu.bracelet.activity.ImagePagerActivity;
 import com.huayu.bracelet.view.NoScrollGridView;
-import com.huayu.bracelet.vo.ItemEntity;
+import com.huayu.bracelet.vo.ListUserZoonInfo;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -29,9 +30,9 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 public class ListItemAdapter extends BaseAdapter {
  
     private Context mContext;
-    private ArrayList<ItemEntity> items;
+    private List<ListUserZoonInfo> items;
  
-    public ListItemAdapter(Context ctx, ArrayList<ItemEntity> items) {
+    public ListItemAdapter(Context ctx,List<ListUserZoonInfo> items) {
         this.mContext = ctx;
         this.items = items;
     }
@@ -69,9 +70,9 @@ public class ListItemAdapter extends BaseAdapter {
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        ItemEntity itemEntity = items.get(position);
-        holder.tv_title.setText(itemEntity.getTitle());
-        holder.tv_content.setText(itemEntity.getContent());
+        ListUserZoonInfo userZoonInfo = items.get(position);
+        holder.tv_title.setText(userZoonInfo.getZooninfo().getUser_screenname());
+        holder.tv_content.setText(userZoonInfo.getZooninfo().getText());
         // 使用ImageLoader加载网络图片
         DisplayImageOptions options = new DisplayImageOptions.Builder()//
                 .showImageOnLoading(R.drawable.ic_launcher) // 加载中显示的默认图片
@@ -80,9 +81,9 @@ public class ListItemAdapter extends BaseAdapter {
                 .cacheOnDisk(true) // sdcard缓存
                 .bitmapConfig(Config.RGB_565)// 设置最低配置
                 .build();//
-        ImageLoader.getInstance().displayImage(itemEntity.getAvatar(),
+        ImageLoader.getInstance().displayImage(userZoonInfo.getZooninfo().getUser_img_url(),
                 holder.iv_avatar, options);
-        final ArrayList<String> imageUrls = itemEntity.getImageUrls();
+        final List<String> imageUrls = userZoonInfo.getZooninfo().getImg_url();
         if (imageUrls == null || imageUrls.size() == 0) { // 没有图片资源就隐藏GridView
             holder.gridview.setVisibility(View.GONE);
         } else {
@@ -108,10 +109,10 @@ public class ListItemAdapter extends BaseAdapter {
      * @param position
      * @param urls2
      */
-    protected void imageBrower(int position, ArrayList<String> urls2) {
+    protected void imageBrower(int position, List<String> urls2) {
         Intent intent = new Intent(mContext, ImagePagerActivity.class);
         // 图片url,为了演示这里使用常量，一般从数据库中或网络中获取
-        intent.putExtra(ImagePagerActivity.EXTRA_IMAGE_URLS, urls2);
+        intent.putExtra(ImagePagerActivity.EXTRA_IMAGE_URLS, (ArrayList<String>)urls2);
         intent.putExtra(ImagePagerActivity.EXTRA_IMAGE_INDEX, position);
         mContext.startActivity(intent);
     }
