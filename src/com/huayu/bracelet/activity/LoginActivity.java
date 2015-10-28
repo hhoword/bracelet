@@ -108,6 +108,7 @@ public class LoginActivity extends PActivity{
 				// TODO Auto-generated method stub
 				Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
 				startActivity(intent);
+				finish();
 			}
 		});
 	}

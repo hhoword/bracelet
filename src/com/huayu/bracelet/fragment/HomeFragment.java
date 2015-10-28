@@ -34,6 +34,9 @@ public class HomeFragment extends Fragment implements OnClickListener{
 	private UartService mService = null;
 	private BluetoothDevice mDevice = null;
 	private TextView homeTvSync;
+	private TextView homeTvStep;
+	private boolean isConnect = false;
+	private String[] deviceInfo;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -41,6 +44,7 @@ public class HomeFragment extends Fragment implements OnClickListener{
 		// TODO Auto-generated method stub
 		View view = inflater.inflate(R.layout.framgent_home, null);
 		homeTvSync = (TextView)view.findViewById(R.id.homeTvSync);
+		homeTvStep = (TextView)view.findViewById(R.id.homeTvStep);
 		homeTvSync.setOnClickListener(this);
 		return view;
 	}
@@ -65,7 +69,7 @@ public class HomeFragment extends Fragment implements OnClickListener{
 			if(deviceAddress!=null){
 				mDevice = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(deviceAddress);
 				Log.d(TAG, "... onActivityResultdevice.address==" + mDevice + "mserviceValue" + mService);
-				mService.connect(deviceAddress);
+				isConnect = mService.connect(deviceAddress);
 				//				String message = "#BF,request,ID,时间,BF#";
 				//				byte[] value;
 				//				try {
@@ -98,6 +102,7 @@ public class HomeFragment extends Fragment implements OnClickListener{
 			if (action.equals(UartService.ACTION_GATT_CONNECTED)) {
 				getActivity().runOnUiThread(new Runnable() {
 					public void run() {
+						isConnect = true;
 						String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
 						Log.d(TAG, "UART_CONNECT_MSG");
 						//						btnConnectDisconnect.setText("Disconnect");
@@ -115,6 +120,7 @@ public class HomeFragment extends Fragment implements OnClickListener{
 			if (action.equals(UartService.ACTION_GATT_DISCONNECTED)) {
 				getActivity().runOnUiThread(new Runnable() {
 					public void run() {
+						isConnect = false;
 						String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
 						Log.d(TAG, "UART_DISCONNECT_MSG");
 						//						btnConnectDisconnect.setText("Connect");
@@ -143,10 +149,12 @@ public class HomeFragment extends Fragment implements OnClickListener{
 					public void run() {
 						try {
 							String text = new String(txValue, "UTF-8");
-							String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
-							//							listAdapter.add("["+currentDateTimeString+"] RX: "+text);
-							//                    	 	messageListView.smoothScrollToPosition(listAdapter.getCount() - 1);
 							Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT).show();
+							deviceInfo = text.split(",");
+							if(deviceInfo!=null){
+								String step = deviceInfo[3];
+								homeTvStep.setText(step);
+							}
 						} catch (Exception e) {
 							Log.e(TAG, e.toString());
 						}
@@ -198,14 +206,25 @@ public class HomeFragment extends Fragment implements OnClickListener{
 		// TODO Auto-generated method stub
 		switch (v.getId()) {
 		case R.id.homeTvSync:
+			if(!isConnect){
+				Toast.makeText(getActivity(), "未连接设备", Toast.LENGTH_LONG).show();
+				return;
+			}
 			Date d = new Date();  
 			SimpleDateFormat ss = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");//12小时制  
 			System.out.println(ss.format(d));  
-			String message = "#BF,request,123456,"+ss.format(d)+",BF#";
+			String time = ss.format(d);
+			String message = "#BF,request,123456,"+time.substring(0, 1);
+			String message2 = time.substring(1, time.length())+",B";
+			String message3 = "F#";
 			byte[] value;
 			try {
 				//send data to service
 				value = message.getBytes("UTF-8");
+				mService.writeRXCharacteristic(value);
+				value = message2.getBytes("UTF-8");
+				mService.writeRXCharacteristic(value);
+				value = message3.getBytes("UTF-8");
 				mService.writeRXCharacteristic(value);
 				//Update the log with time stamp
 			} catch (UnsupportedEncodingException e) {

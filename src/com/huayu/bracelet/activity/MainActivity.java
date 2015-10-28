@@ -36,10 +36,6 @@ public class MainActivity extends FragmentActivity {
 		mFragments = new Fragment[3];  
 		fragmentManager = getSupportFragmentManager();  
 		mFragments[0] = fragmentManager.findFragmentById(R.id.fragmentHome);  
-//		Bundle bundle = new Bundle();
-//		bundle.putString(BluetoothDevice.EXTRA_DEVICE, 
-//				getIntent().getStringExtra(BluetoothDevice.EXTRA_DEVICE));
-//		mFragments[0].setArguments(bundle);
 		mFragments[1] = fragmentManager.findFragmentById(R.id.fragmentFriend);  
 		mFragments[2] = fragmentManager.findFragmentById(R.id.fragmentMe);
 		fragmentTransaction = fragmentManager.beginTransaction()  

@@ -6,7 +6,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:background="@color/red"
         android:gravity="center"
         android:padding="10dp" >
@@ -22,7 +22,6 @@
             android:id="@+id/textView1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
             android:layout_weight="1"
             android:gravity="center_horizontal"
             android:text="今天"
@@ -32,7 +31,10 @@
         <TextView
             android:id="@+id/homeTvSync"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:gravity="center"
             android:text="同步"
             android:textColor="@color/white" />
     </LinearLayout>
@@ -49,7 +51,7 @@
             android:orientation="vertical" >
 
             <TextView
-                android:id="@+id/textView3"
+                android:id="@+id/homeTvStep"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="20dp"
