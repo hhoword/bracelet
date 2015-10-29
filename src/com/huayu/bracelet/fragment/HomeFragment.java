@@ -1,10 +1,11 @@
 package com.huayu.bracelet.fragment;
 
 import java.io.UnsupportedEncodingException;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -17,6 +18,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,7 +27,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.huayu.bracelet.BaseApplication;
 import com.huayu.bracelet.R;
+import com.huayu.bracelet.activity.BTsearchActivity;
 import com.huayu.bracelet.services.UartService;
 
 public class HomeFragment extends Fragment implements OnClickListener{
@@ -38,12 +42,19 @@ public class HomeFragment extends Fragment implements OnClickListener{
 	private boolean isConnect = false;
 	private String stepInfo;
 	private String[] deviceInfo;
+	//	private ProgressDialog progressdialog;
+	private Date d = new Date();  
+	private SimpleDateFormat ss ;
 
+	@SuppressLint({ "SimpleDateFormat", "InflateParams" })
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		View view = inflater.inflate(R.layout.framgent_home, null);
+		ss = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");//12小时制  
+		//		progressdialog = new ProgressDialog(getActivity());
+		//		progressdialog.setCancelable(false);
 		homeTvSync = (TextView)view.findViewById(R.id.homeTvSync);
 		homeTvStep = (TextView)view.findViewById(R.id.homeTvStep);
 		homeTvSync.setOnClickListener(this);
@@ -68,20 +79,10 @@ public class HomeFragment extends Fragment implements OnClickListener{
 			}
 			String deviceAddress = getActivity().getIntent().getStringExtra(BluetoothDevice.EXTRA_DEVICE);
 			if(deviceAddress!=null){
+				BaseApplication.mac  = deviceAddress;
 				mDevice = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(deviceAddress);
 				Log.d(TAG, "... onActivityResultdevice.address==" + mDevice + "mserviceValue" + mService);
 				isConnect = mService.connect(deviceAddress);
-				//				String message = "#BF,request,ID,时间,BF#";
-				//				byte[] value;
-				//				try {
-				//					//send data to service
-				//					value = message.getBytes("UTF-8");
-				//					mService.writeRXCharacteristic(value);
-				//					//Update the log with time stamp
-				//				} catch (UnsupportedEncodingException e) {
-				//					// TODO Auto-generated catch block
-				//					e.printStackTrace();
-				//				}
 			}
 
 
@@ -97,21 +98,12 @@ public class HomeFragment extends Fragment implements OnClickListener{
 		public void onReceive(Context context, Intent intent) {
 			String action = intent.getAction();
 
-			final Intent mIntent = intent;
 			//*********************//
 			if (action.equals(UartService.ACTION_GATT_CONNECTED)) {
 				getActivity().runOnUiThread(new Runnable() {
 					public void run() {
 						isConnect = true;
-						String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
 						Log.d(TAG, "UART_CONNECT_MSG");
-						//						btnConnectDisconnect.setText("Disconnect");
-						//						edtMessage.setEnabled(true);
-						//						btnSend.setEnabled(true);
-						//						((TextView) findViewById(R.id.deviceName)).setText(mDevice.getName()+ " - ready");
-						//						listAdapter.add("["+currentDateTimeString+"] Connected to: "+ mDevice.getName());
-						//						messageListView.smoothScrollToPosition(listAdapter.getCount() - 1);
-						//						mState = UART_PROFILE_CONNECTED;
 					}
 				});
 			}
@@ -121,17 +113,8 @@ public class HomeFragment extends Fragment implements OnClickListener{
 				getActivity().runOnUiThread(new Runnable() {
 					public void run() {
 						isConnect = false;
-						String currentDateTimeString = DateFormat.getTimeInstance().format(new Date());
+						//						progressdialog.dismiss();
 						Log.d(TAG, "UART_DISCONNECT_MSG");
-						//						btnConnectDisconnect.setText("Connect");
-						//						edtMessage.setEnabled(false);
-						//						btnSend.setEnabled(false);
-						//						((TextView) findViewById(R.id.deviceName)).setText("Not Connected");
-						//						listAdapter.add("["+currentDateTimeString+"] Disconnected to: "+ mDevice.getName());
-						//						mState = UART_PROFILE_DISCONNECTED;
-						//						mService.close();
-						//setUiState();
-
 					}
 				});
 			}
@@ -148,16 +131,33 @@ public class HomeFragment extends Fragment implements OnClickListener{
 				getActivity().runOnUiThread(new Runnable() {
 					public void run() {
 						try {
+							int lastStep = BaseApplication.getInstance().getStep();
+							String asyncDate = BaseApplication.getInstance().getAsyncDate();
+							int asyncday;
 							String text = new String(txValue, "UTF-8");
 							Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT).show();
 							stepInfo+=text;
-							deviceInfo = text.split(",");
-							if(deviceInfo!=null&&"BF#".equals(deviceInfo[deviceInfo.length])){
+							deviceInfo = stepInfo.split(",");
+							if(deviceInfo!=null&&"BF#".equals(deviceInfo[deviceInfo.length-1])){
 								deviceInfo = stepInfo.split(",");
 								String step = deviceInfo[3];
-								stepInfo = "";
-								homeTvStep.setText(step);
+								String responDate = deviceInfo[4];
+								String power = deviceInfo[5];
+//								if(!TextUtils.isEmpty(asyncDate)){
+//									Date date = ss.parse(asyncDate);
+//									asyncday = date.getDate();
+//									stepInfo = "";
+//								}else{
+									int currentStep = lastStep +Integer.parseInt(step);
+									BaseApplication.getInstance().setStep(currentStep);
+									BaseApplication.getInstance().setPower(power);
+									stepInfo = "";
+									homeTvStep.setText(currentStep+"");
+									BaseApplication.getInstance().setAsyncDate(ss.format(d));
+									//									progressdialog.dismiss();
+//								}
 							}
+
 						} catch (Exception e) {
 							Log.e(TAG, e.toString());
 						}
@@ -166,14 +166,11 @@ public class HomeFragment extends Fragment implements OnClickListener{
 			}
 			//*********************//
 			if (action.equals(UartService.DEVICE_DOES_NOT_SUPPORT_UART)){
-				Toast.makeText(getActivity(), "蓝牙不可用", Toast.LENGTH_LONG).show();
+				Toast.makeText(getActivity(), "蓝牙不可用", Toast.LENGTH_SHORT).show();
 				mService.disconnect();
 			}
-
-
 		}
 	};
-
 
 	private void service_init() {
 		Intent bindIntent = new Intent(getActivity(), UartService.class);
@@ -204,6 +201,31 @@ public class HomeFragment extends Fragment implements OnClickListener{
 		mService= null;
 	}
 
+	/**
+	 * 发送同步信息
+	 * @param time yyyy-MM-dd hh:mm:ss
+	 */
+	private void sendMessage(String time){
+		String message = "#BF,request,"+BaseApplication.devicesId
+				+","+time.substring(0, 1);
+		String message2 = time.substring(1, time.length())+",B";
+		String message3 = "F#";
+		byte[] value;
+		try {
+			//send data to service
+			value = message.getBytes("UTF-8");
+			mService.writeRXCharacteristic(value);
+			value = message2.getBytes("UTF-8");
+			mService.writeRXCharacteristic(value);
+			value = message3.getBytes("UTF-8");
+			mService.writeRXCharacteristic(value);
+			//Update the log with time stamp
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
@@ -211,29 +233,15 @@ public class HomeFragment extends Fragment implements OnClickListener{
 		case R.id.homeTvSync:
 			if(!isConnect){
 				Toast.makeText(getActivity(), "未连接设备", Toast.LENGTH_LONG).show();
+				Intent intent = new Intent(getActivity(), BTsearchActivity.class);
+				getActivity().startActivity(intent);
 				return;
 			}
-			Date d = new Date();  
-			SimpleDateFormat ss = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");//12小时制  
-			System.out.println(ss.format(d));  
+			//			progressdialog.setMessage("正在同步中...");
+			//			progressdialog.show();
+			Toast.makeText(getActivity(), "正在同步中...", Toast.LENGTH_LONG).show();
 			String time = ss.format(d);
-			String message = "#BF,request,123456,"+time.substring(0, 1);
-			String message2 = time.substring(1, time.length())+",B";
-			String message3 = "F#";
-			byte[] value;
-			try {
-				//send data to service
-				value = message.getBytes("UTF-8");
-				mService.writeRXCharacteristic(value);
-				value = message2.getBytes("UTF-8");
-				mService.writeRXCharacteristic(value);
-				value = message3.getBytes("UTF-8");
-				mService.writeRXCharacteristic(value);
-				//Update the log with time stamp
-			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			sendMessage(time);
 			break;
 
 		default:

@@ -7,6 +7,7 @@ import java.util.Map;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothManager;
@@ -16,6 +17,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,12 +26,15 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.huayu.bracelet.BaseApplication;
 import com.huayu.bracelet.R;
+import com.huayu.bracelet.vo.DevicesInfo;
 
 
 public class BTsearchActivity extends PActivity implements OnClickListener{
@@ -46,6 +51,7 @@ public class BTsearchActivity extends PActivity implements OnClickListener{
 	private static final long SCAN_PERIOD = 10000; //10 seconds
 	private Handler mHandler;
 	private ProgressBar SearchProgress;
+	private List<DevicesInfo> devicesInfos;
 //	private boolean mScanning;
 
 	@SuppressLint("NewApi") @Override
@@ -164,13 +170,61 @@ public class BTsearchActivity extends PActivity implements OnClickListener{
 		@SuppressLint("NewApi") @Override
 		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 			mBluetoothAdapter.stopLeScan(mLeScanCallback);
-			Bundle b = new Bundle();
-			b.putString(BluetoothDevice.EXTRA_DEVICE, deviceList.get(position).getAddress());
-			Intent intent = new Intent(BTsearchActivity.this,MainActivity.class);
-			intent.putExtras(b);
-			startActivity(intent);
-//			setResult(Activity.RESULT_OK, result);
-			finish();
+			boolean isBind = false;
+			final String mac =  deviceList.get(position).getAddress();
+			devicesInfos = BaseApplication.getInstance().getDevicesInfo();
+			if(devicesInfos!=null&&devicesInfos.size()>0){
+				for(DevicesInfo devicesInfo : devicesInfos){
+					if(mac.equals(devicesInfo.getMac())){
+						BaseApplication.devicesId = devicesInfo.getId();
+						isBind = true;
+					}
+				}
+			}
+			if(!isBind){
+				View v = getLayoutInflater().inflate(R.layout.dialog_set_id, null);
+				final EditText setEdId = (EditText)v.findViewById(R.id.setEdId); 
+				TextView setTvComfirm = (TextView)v.findViewById(R.id.setTvComfirm);
+				new AlertDialog.Builder(BTsearchActivity.this)
+				.setView(v)
+				.setCancelable(false)
+				.show();
+				setTvComfirm.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						// TODO Auto-generated method stub
+						if(TextUtils.isEmpty(setEdId.getText().toString())&&
+								setEdId.getText().toString().length()!=6){
+							Toast.makeText(BTsearchActivity.this, "请输入6位手环ID",
+									Toast.LENGTH_SHORT).show();
+							return;
+						}
+						BaseApplication.devicesId = setEdId.getText().toString();
+						if(devicesInfos==null){
+							devicesInfos = new ArrayList<DevicesInfo>();
+						}
+						DevicesInfo devicesInfo = new DevicesInfo();
+						devicesInfo.setId(setEdId.getText().toString());
+						devicesInfo.setMac(mac);
+						devicesInfos.add(devicesInfo);
+						BaseApplication.getInstance().setDevicesInfo(devicesInfos);
+						Bundle b = new Bundle();
+						b.putString(BluetoothDevice.EXTRA_DEVICE,mac);
+						Intent intent = new Intent(BTsearchActivity.this,MainActivity.class);
+						intent.putExtras(b);
+						startActivity(intent);
+						finish();
+					}
+				});
+			}else{
+				Bundle b = new Bundle();
+				b.putString(BluetoothDevice.EXTRA_DEVICE,mac);
+				Intent intent = new Intent(BTsearchActivity.this,MainActivity.class);
+				intent.putExtras(b);
+				startActivity(intent);
+				finish();
+			}
 		}
 	};
 

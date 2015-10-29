@@ -10,10 +10,8 @@ import org.springframework.util.MultiValueMap;
 import android.os.Handler;
 
 import com.huayu.bracelet.activity.IOnDataListener;
-import com.huayu.bracelet.vo.ItemEntity;
 import com.huayu.bracelet.vo.ListUserZoonInfo;
 import com.huayu.bracelet.vo.UserData;
-import com.huayu.bracelet.vo.UserZoonInfo;
 
 public class HttpUtil {
 
@@ -23,7 +21,7 @@ public class HttpUtil {
 	private static final int get = 1;
 //	private String url = "http://192.168.0.109:54242";
 	private String url = "http://203.195.137.93:54242";
-	private String url2 = "http://14.23.85.254:9000/my1";
+//	private String url2 = "http://14.23.85.254:9000/my1";
 
 	public HttpUtil() {
 		// TODO Auto-generated constructor stub
@@ -95,7 +93,6 @@ public class HttpUtil {
 		private String url;
 		private MediaType mediaType;
 
-		@SuppressWarnings("unchecked")
 		public HttpThread(String url,int type,V v,Class<T> clazz, MediaType mediaType) {
 			// TODO Auto-generated constructor stub
 			this.type = type;
