@@ -36,6 +36,7 @@ public class HomeFragment extends Fragment implements OnClickListener{
 	private TextView homeTvSync;
 	private TextView homeTvStep;
 	private boolean isConnect = false;
+	private String stepInfo;
 	private String[] deviceInfo;
 
 	@Override
@@ -87,7 +88,6 @@ public class HomeFragment extends Fragment implements OnClickListener{
 		}
 
 		public void onServiceDisconnected(ComponentName classname) {
-			////     mService.disconnect(mDevice);
 			mService = null;
 		}
 	};
@@ -150,9 +150,12 @@ public class HomeFragment extends Fragment implements OnClickListener{
 						try {
 							String text = new String(txValue, "UTF-8");
 							Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT).show();
+							stepInfo+=text;
 							deviceInfo = text.split(",");
-							if(deviceInfo!=null){
+							if(deviceInfo!=null&&"BF#".equals(deviceInfo[deviceInfo.length])){
+								deviceInfo = stepInfo.split(",");
 								String step = deviceInfo[3];
+								stepInfo = "";
 								homeTvStep.setText(step);
 							}
 						} catch (Exception e) {

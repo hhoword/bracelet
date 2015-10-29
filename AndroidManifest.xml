@@ -11,6 +11,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.FLASHLIGHT" />
 
     <uses-feature
         android:name="android.hardware.bluetooth_le"
@@ -47,6 +49,13 @@
         <activity android:name=".activity.RegisterActivity" >
         </activity>
         <activity android:name=".activity.ImageBrowseActivity"></activity>
+        <activity
+            android:name=".activity.CaptureActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Holo.Light.NoActionBar" >
+        </activity>
+        
     </application>
 
 </manifest>

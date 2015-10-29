@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <color name="orange">#FFA500</color>
     <color name="grap_light">#EEEEE0</color>
     <color name="black">#000000</color>
@@ -10,4 +11,10 @@
     <color name="grap_tra">#dd777777</color>
     <color name="Grayish">#b6b7b0</color>
     <color name="col_bg_me">#3b404c</color>
+    <color name="result_view">#b0000000</color>
+    <color name="viewfinder_mask">#60000000</color>
+    <color name="viewfinder_frame">#ff000000</color>
+    <color name="viewfinder_laser">#ffff0000</color>
+    <color name="possible_result_points">#c0ffbd21</color>
+
 </resources>
