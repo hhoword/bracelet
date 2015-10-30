@@ -2,7 +2,9 @@ package com.huayu.bracelet.fragment;
 
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
@@ -31,6 +33,7 @@ import com.huayu.bracelet.BaseApplication;
 import com.huayu.bracelet.R;
 import com.huayu.bracelet.activity.BTsearchActivity;
 import com.huayu.bracelet.services.UartService;
+import com.huayu.bracelet.vo.DeviceStepInfo;
 
 public class HomeFragment extends Fragment implements OnClickListener{
 
@@ -143,19 +146,40 @@ public class HomeFragment extends Fragment implements OnClickListener{
 								String step = deviceInfo[3];
 								String responDate = deviceInfo[4];
 								String power = deviceInfo[5];
-//								if(!TextUtils.isEmpty(asyncDate)){
-//									Date date = ss.parse(asyncDate);
-//									asyncday = date.getDate();
-//									stepInfo = "";
-//								}else{
+								BaseApplication.getInstance().setPower(power);
+								BaseApplication.getInstance().setAsyncDate(ss.format(d));
+								if(!TextUtils.isEmpty(asyncDate)){//如果有上次同步时间点
+									if(BaseApplication.isSameday(ss.format(d),asyncDate)){//上次同步时间为今天
+										int currentStep = lastStep +Integer.parseInt(step);
+										BaseApplication.getInstance().setStep(currentStep);
+										homeTvStep.setText(currentStep+"");
+									}else{
+										if(BaseApplication.isSameday(ss.format(d),responDate)){
+											int currentStep = lastStep +Integer.parseInt(step);
+											BaseApplication.getInstance().setStep(currentStep);
+											homeTvStep.setText(currentStep+"");
+											String beforDay = BaseApplication.getSpecifiedDayBefore(responDate);
+											sendMessage(beforDay);
+										}else{
+											DeviceStepInfo deviceStepInfo = new DeviceStepInfo();
+											deviceStepInfo.setDate(responDate);
+											deviceStepInfo.setStep(step);
+											deviceStepInfo.setMac(BaseApplication.mac);
+											List<DeviceStepInfo> deviceStepInfos = new ArrayList<DeviceStepInfo>();
+											deviceStepInfos.add(deviceStepInfo);
+//											BaseApplication.getInstance().setAsyncDate(date);
+											String beforDay = BaseApplication.getSpecifiedDayBefore(responDate);
+											sendMessage(beforDay);
+										}
+									}
+								}else{
 									int currentStep = lastStep +Integer.parseInt(step);
 									BaseApplication.getInstance().setStep(currentStep);
-									BaseApplication.getInstance().setPower(power);
-									stepInfo = "";
 									homeTvStep.setText(currentStep+"");
-									BaseApplication.getInstance().setAsyncDate(ss.format(d));
 									//									progressdialog.dismiss();
-//								}
+								}
+								//清空步数信息
+								stepInfo = "";
 							}
 
 						} catch (Exception e) {
