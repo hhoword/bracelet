@@ -38,10 +38,10 @@
         <activity android:name=".activity.LoginActivity" >
         </activity>
         <activity android:name=".activity.MainActivity" 
-            android:launchMode="singleTop">
-        </activity>
+            android:launchMode="singleTask">
+        </activity>z
         <activity android:name=".activity.BTsearchActivity"
-            android:launchMode="singleTop" >
+            android:launchMode="singleTask" >
         </activity>
 
         <service

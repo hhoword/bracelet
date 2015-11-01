@@ -8,11 +8,11 @@
         android:id="@+id/iv_avatar"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:background="@drawable/ic_launcher"
+        android:src="@drawable/ico_header_default"
         android:scaleType="centerCrop" />
 
     <TextView
-        android:id="@+id/textView1"
+        android:id="@+id/tvLevel"
         android:layout_width="50dp"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
@@ -28,8 +28,9 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="5dp"
         android:layout_toRightOf="@id/iv_avatar"
-        android:text="爷，今天心情好！"
+        android:text="用户名"
         android:textSize="16sp" />
+    
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -44,7 +45,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
             android:layout_marginTop="3dp"
-            android:text="今天又是雾霾！"
+            android:text="发表一个说说"
             android:textSize="16sp" />
 
         <com.huayu.bracelet.view.NoScrollGridView
@@ -62,5 +63,13 @@
         </com.huayu.bracelet.view.NoScrollGridView>
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/tvDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/tv_title"
+        android:layout_marginLeft="72dp"
+        android:layout_toRightOf="@+id/tv_title"
+        android:text="00-00 00:00" />
 
 </RelativeLayout>

@@ -12,7 +12,7 @@
         android:padding="10dp" >
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/homeTvShare"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="分享"
@@ -78,7 +78,7 @@
                         android:src="@drawable/icon_distance_70x70" />
 
                     <TextView
-                        android:id="@+id/textView5"
+                        android:id="@+id/homevTvDistance"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0.0"
@@ -104,7 +104,7 @@
                         android:src="@drawable/icon_ca_70x70" />
 
                     <TextView
-                        android:id="@+id/homeTv"
+                        android:id="@+id/homeTvCalorie"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0"
@@ -131,7 +131,7 @@
                         android:src="@drawable/icon_run_70x70" />
 
                     <TextView
-                        android:id="@+id/textView7"
+                        android:id="@+id/homeTvAvgStep"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0"

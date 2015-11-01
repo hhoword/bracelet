@@ -1,5 +1,8 @@
 package com.huayu.bracelet.fragment;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -27,6 +30,7 @@ public class FriendCricleFragment extends Fragment{
 	private ListItemAdapter adapter;
 	private int pageSize=20;
 	private int index=0;
+	private List<ListUserZoonInfo> listUserZoonInfo;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -45,9 +49,14 @@ public class FriendCricleFragment extends Fragment{
 			public void onRefresh(PullToRefreshBase<ScrollView> refreshView) {
 				// TODO Auto-generated method stub
 				if (friendPullScrollView.getReadyForPullStart()) {// 拉到最上面
+					index = 0;
+					listUserZoonInfo.clear();
+					getCircleData();
 				}
 
 				if (friendPullScrollView.getReadyForPullEnd()) {//上拉加载更多
+					index ++;
+					getCircleData();
 				}
 				friendPullScrollView.onRefreshComplete();
 			}
@@ -59,6 +68,11 @@ public class FriendCricleFragment extends Fragment{
 	public void onActivityCreated(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
 		super.onActivityCreated(savedInstanceState);
+		listUserZoonInfo = new ArrayList<ListUserZoonInfo>();
+		getCircleData();
+	}
+	
+	private void getCircleData(){
 		HttpUtil httpUtil = new HttpUtil();
 		UserData userData = BaseApplication.getInstance().getUserData();
 		httpUtil.getFriendCircle(userData.getData().getUserinfo().getId()+"", 
@@ -69,7 +83,8 @@ public class FriendCricleFragment extends Fragment{
 						// TODO Auto-generated method stub
 						if(t!=null){
 							if(t.getData()!=null){
-								adapter = new ListItemAdapter(getActivity(), t.getData());
+								listUserZoonInfo.addAll(t.getData());
+								adapter = new ListItemAdapter(getActivity(), listUserZoonInfo);
 								friendLv.setAdapter(adapter);
 							}
 						}

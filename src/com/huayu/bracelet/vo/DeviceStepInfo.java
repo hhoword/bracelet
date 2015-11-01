@@ -2,26 +2,34 @@ package com.huayu.bracelet.vo;
 
 public class DeviceStepInfo {
 
-	private String mac;
-	private String step;
-	private String date;
+	private String uid;
+	private String Mac;
+	private String Stepcount;
+	private String Datetime;
+	
+	public String getUid() {
+		return uid;
+	}
+	public void setUid(String uid) {
+		this.uid = uid;
+	}
 	public String getMac() {
-		return mac;
+		return Mac;
 	}
 	public void setMac(String mac) {
-		this.mac = mac;
+		Mac = mac;
 	}
-	public String getStep() {
-		return step;
+	public String getStepcount() {
+		return Stepcount;
 	}
-	public void setStep(String step) {
-		this.step = step;
+	public void setStepcount(String stepcount) {
+		Stepcount = stepcount;
 	}
-	public String getDate() {
-		return date;
+	public String getDatetime() {
+		return Datetime;
 	}
-	public void setDate(String date) {
-		this.date = date;
+	public void setDatetime(String datetime) {
+		Datetime = datetime;
 	}
 	
 	

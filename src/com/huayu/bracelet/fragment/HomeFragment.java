@@ -2,10 +2,11 @@ package com.huayu.bracelet.fragment;
 
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import android.annotation.SuppressLint;
-import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -30,7 +31,11 @@ import android.widget.Toast;
 import com.huayu.bracelet.BaseApplication;
 import com.huayu.bracelet.R;
 import com.huayu.bracelet.activity.BTsearchActivity;
+import com.huayu.bracelet.activity.IOnDataListener;
+import com.huayu.bracelet.http.HttpUtil;
 import com.huayu.bracelet.services.UartService;
+import com.huayu.bracelet.vo.DeviceStepInfo;
+import com.huayu.bracelet.vo.WeeKAvgStep;
 
 public class HomeFragment extends Fragment implements OnClickListener{
 
@@ -39,12 +44,17 @@ public class HomeFragment extends Fragment implements OnClickListener{
 	private BluetoothDevice mDevice = null;
 	private TextView homeTvSync;
 	private TextView homeTvStep;
+	private TextView homevTvDistance;
+	private TextView homeTvCalorie;
+	private TextView homeTvAvgStep;
 	private boolean isConnect = false;
 	private String stepInfo;
 	private String[] deviceInfo;
 	//	private ProgressDialog progressdialog;
 	private Date d = new Date();  
 	private SimpleDateFormat ss ;
+	private String requestDate;
+	private int requestNum = 0;
 
 	@SuppressLint({ "SimpleDateFormat", "InflateParams" })
 	@Override
@@ -57,6 +67,9 @@ public class HomeFragment extends Fragment implements OnClickListener{
 		//		progressdialog.setCancelable(false);
 		homeTvSync = (TextView)view.findViewById(R.id.homeTvSync);
 		homeTvStep = (TextView)view.findViewById(R.id.homeTvStep);
+		homevTvDistance = (TextView)view.findViewById(R.id.homevTvDistance);
+		homeTvCalorie = (TextView)view.findViewById(R.id.homeTvCalorie);
+		homeTvAvgStep = (TextView)view.findViewById(R.id.homeTvAvgStep);
 		homeTvSync.setOnClickListener(this);
 		return view;
 	}
@@ -131,31 +144,62 @@ public class HomeFragment extends Fragment implements OnClickListener{
 				getActivity().runOnUiThread(new Runnable() {
 					public void run() {
 						try {
+							if(requestNum>=30){ //只能保存30天内的数据
+								upLoadStep();
+								requestNum=0;
+								return;
+							}
+							requestNum++;
 							int lastStep = BaseApplication.getInstance().getStep();
 							String asyncDate = BaseApplication.getInstance().getAsyncDate();
-							int asyncday;
 							String text = new String(txValue, "UTF-8");
-							Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT).show();
+//							Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT).show();
 							stepInfo+=text;
 							deviceInfo = stepInfo.split(",");
 							if(deviceInfo!=null&&"BF#".equals(deviceInfo[deviceInfo.length-1])){
 								deviceInfo = stepInfo.split(",");
 								String step = deviceInfo[3];
-								String responDate = deviceInfo[4];
 								String power = deviceInfo[5];
-//								if(!TextUtils.isEmpty(asyncDate)){
-//									Date date = ss.parse(asyncDate);
-//									asyncday = date.getDate();
-//									stepInfo = "";
-//								}else{
-									int currentStep = lastStep +Integer.parseInt(step);
-									BaseApplication.getInstance().setStep(currentStep);
-									BaseApplication.getInstance().setPower(power);
-									stepInfo = "";
-									homeTvStep.setText(currentStep+"");
+								//保存电量
+								BaseApplication.getInstance().setPower(power);
+								if(!TextUtils.isEmpty(asyncDate)){//如果有上次同步时间点
+									if(BaseApplication.isSameday(ss.format(d),asyncDate)){//上次同步时间为今天
+										setStep(step, lastStep);
+										//保存同步时间
+										BaseApplication.getInstance().setAsyncDate(ss.format(d));
+										//同步完成，上传步数
+										upLoadStep();
+										saveStepInfo(step);
+									}else{
+										if(BaseApplication.isSameday(ss.format(d),requestDate)){//请求时间如果是今天
+											setStep(step, lastStep);
+											//获取当前请求时间前一天时间作为请求时间
+											saveStepInfo(step);
+											requestDate = BaseApplication.getSpecifiedDayBefore(requestDate);
+											sendMessage(requestDate);
+										}else{
+											if(BaseApplication.isSameday(requestDate, asyncDate)){
+												//保存同步时间
+												BaseApplication.getInstance().setAsyncDate(ss.format(d));
+												//同步完成，上传步数
+												upLoadStep();
+												return ;
+											}
+											saveStepInfo(step);
+											requestDate = BaseApplication.getSpecifiedDayBefore(requestDate);
+											sendMessage(requestDate);
+										}
+									}
+								}else{
+									setStep(step, lastStep);
+									saveStepInfo(step);
+									//保存同步时间
 									BaseApplication.getInstance().setAsyncDate(ss.format(d));
-									//									progressdialog.dismiss();
-//								}
+									//上传步数
+									upLoadStep();
+								}
+								//清空步数信息
+								stepInfo = "";
 							}
 
 						} catch (Exception e) {
@@ -172,6 +216,53 @@ public class HomeFragment extends Fragment implements OnClickListener{
 		}
 	};
 
+	private void setStep(String step,int lastStep){
+		int currentStep = lastStep +Integer.parseInt(step);
+		BaseApplication.getInstance().setStep(currentStep);
+		homeTvStep.setText(currentStep+"");
+	}
+	private void saveStepInfo(String step){
+		List<DeviceStepInfo> deviceStepInfos = new ArrayList<DeviceStepInfo>();
+		deviceStepInfos = BaseApplication.getInstance().getDeviceStepInfo();
+		DeviceStepInfo deviceStepInfo = new DeviceStepInfo();
+		deviceStepInfo.setDatetime(requestDate);
+		deviceStepInfo.setStepcount(step);
+		deviceStepInfo.setMac(BaseApplication.mac);
+		deviceStepInfo.setUid(BaseApplication.getInstance()
+				.getUserData().getData().getUserinfo().getId()+"");
+		deviceStepInfos.add(deviceStepInfo);
+		BaseApplication.getInstance().setDeviceStepInfo(deviceStepInfos);
+	}
+	
+	private void upLoadStep(){
+		List<DeviceStepInfo> deviceStepInfos = new ArrayList<DeviceStepInfo>();
+		for(DeviceStepInfo deviceStepInfo : BaseApplication.getInstance().getDeviceStepInfo()){
+			if(deviceStepInfo.getUid().equals(BaseApplication.getInstance()
+					.getUserData().getData().getUserinfo().getId()+"")){
+				deviceStepInfos.add(deviceStepInfo);
+			}
+		}
+		HttpUtil httpUtil = new HttpUtil();
+		httpUtil.postStepInfo(deviceStepInfos, new IOnDataListener<WeeKAvgStep>() {
+			
+			@Override
+			public void onDataResult(WeeKAvgStep t) {
+				// TODO Auto-generated method stub
+				if(t!=null){
+					if(t.getCode()==200){
+						if(t.getData().isStatus()){
+							Toast.makeText(getActivity(), "同步成功", Toast.LENGTH_SHORT).show();
+							homeTvAvgStep.setText(t.getData().getStepavg());
+							BaseApplication.getInstance().setDeviceStepInfo(null);
+							return;
+						}
+					}
+				}
+				Toast.makeText(getActivity(), "同步失败", Toast.LENGTH_SHORT).show();
+			}
+		});
+	}
+	
 	private void service_init() {
 		Intent bindIntent = new Intent(getActivity(), UartService.class);
 		getActivity().bindService(bindIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
@@ -240,8 +331,8 @@ public class HomeFragment extends Fragment implements OnClickListener{
 			//			progressdialog.setMessage("正在同步中...");
 			//			progressdialog.show();
 			Toast.makeText(getActivity(), "正在同步中...", Toast.LENGTH_LONG).show();
-			String time = ss.format(d);
-			sendMessage(time);
+			requestDate = ss.format(d);
+			sendMessage(requestDate);
 			break;
 
 		default:

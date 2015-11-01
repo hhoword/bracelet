@@ -1,5 +1,6 @@
 package com.huayu.bracelet.http;
 
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -10,8 +11,10 @@ import org.springframework.util.MultiValueMap;
 import android.os.Handler;
 
 import com.huayu.bracelet.activity.IOnDataListener;
+import com.huayu.bracelet.vo.DeviceStepInfo;
 import com.huayu.bracelet.vo.ListUserZoonInfo;
 import com.huayu.bracelet.vo.UserData;
+import com.huayu.bracelet.vo.WeeKAvgStep;
 
 public class HttpUtil {
 
@@ -61,6 +64,14 @@ public class HttpUtil {
 		HttpThread<ListUserZoonInfo, MultiValueMap<String, String>> httpThread = 
 				new HttpThread<ListUserZoonInfo, MultiValueMap<String, String>>(
 						url+"/UserZoon/GetZoonByPage",0, data,ListUserZoonInfo.class,MediaType.MULTIPART_FORM_DATA);
+		httpThread.setDataListener(dataListener);
+		fixedThreadPool.execute(httpThread);
+	}
+	
+	public void postStepInfo(List<DeviceStepInfo> deviceStepInfos,IOnDataListener<WeeKAvgStep> dataListener){
+		HttpThread<WeeKAvgStep, List<DeviceStepInfo>> httpThread = new HttpThread<WeeKAvgStep,
+				List<DeviceStepInfo>>(url+"/Step/UpdateStep", get, deviceStepInfos, WeeKAvgStep.class,
+						MediaType.APPLICATION_JSON);
 		httpThread.setDataListener(dataListener);
 		fixedThreadPool.execute(httpThread);
 	}
@@ -115,7 +126,7 @@ public class HttpUtil {
 				result = proxy.postData(url, clazz, v);
 				break;
 			case get:
-
+				result = proxy.getData(url, clazz, v);
 				break;
 			default:
 				break;
