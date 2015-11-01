@@ -149,7 +149,7 @@ public class HomeFragment extends Fragment implements OnClickListener{
 								requestNum=0;
 								return;
 							}
-							requestNum++;
+							requestNum++; 
 							int lastStep = BaseApplication.getInstance().getStep();
 							String asyncDate = BaseApplication.getInstance().getAsyncDate();
 							String text = new String(txValue, "UTF-8");
