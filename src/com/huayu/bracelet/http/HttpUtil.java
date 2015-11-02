@@ -55,6 +55,14 @@ public class HttpUtil {
 		fixedThreadPool.execute(httpThread);
 	}
 	
+	public void postStepInfo(List<DeviceStepInfo> deviceStepInfos,IOnDataListener<WeeKAvgStep> dataListener){
+		HttpThread<WeeKAvgStep, List<DeviceStepInfo>> httpThread = new HttpThread<WeeKAvgStep,
+				List<DeviceStepInfo>>(url+"/Step/UpdateStep", get, deviceStepInfos, WeeKAvgStep.class,
+						MediaType.APPLICATION_JSON);
+		httpThread.setDataListener(dataListener);
+		fixedThreadPool.execute(httpThread);
+	}
+	
 	public void getFriendCircle(String id,String index,String pagesize,
 			IOnDataListener<ListUserZoonInfo> dataListener){
 		MultiValueMap<String, String> data = new LinkedMultiValueMap<String, String>();
@@ -68,13 +76,20 @@ public class HttpUtil {
 		fixedThreadPool.execute(httpThread);
 	}
 	
-	public void postStepInfo(List<DeviceStepInfo> deviceStepInfos,IOnDataListener<WeeKAvgStep> dataListener){
-		HttpThread<WeeKAvgStep, List<DeviceStepInfo>> httpThread = new HttpThread<WeeKAvgStep,
-				List<DeviceStepInfo>>(url+"/Step/UpdateStep", get, deviceStepInfos, WeeKAvgStep.class,
-						MediaType.APPLICATION_JSON);
+	
+	public void postFriendTalk(String id,String index,String pagesize,
+			IOnDataListener<ListUserZoonInfo> dataListener){
+		MultiValueMap<String, String> data = new LinkedMultiValueMap<String, String>();
+		data.add("userid", id);
+		data.add("page", index);
+		data.add("pagesize", pagesize);
+		HttpThread<ListUserZoonInfo, MultiValueMap<String, String>> httpThread = 
+				new HttpThread<ListUserZoonInfo, MultiValueMap<String, String>>(
+						url+"/UserZoon/GetZoonByPage",0, data,ListUserZoonInfo.class,MediaType.MULTIPART_FORM_DATA);
 		httpThread.setDataListener(dataListener);
 		fixedThreadPool.execute(httpThread);
 	}
+	
 	
 	/*public void test(String username ,String pwd,
 			IOnDataListener<UserInfo> dataListener){

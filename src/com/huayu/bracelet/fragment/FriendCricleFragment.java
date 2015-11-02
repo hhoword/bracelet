@@ -3,11 +3,14 @@ package com.huayu.bracelet.fragment;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
+import android.widget.ImageView;
 import android.widget.ScrollView;
 
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
@@ -17,16 +20,18 @@ import com.handmark.pulltorefresh.library.PullToRefreshScrollView;
 import com.huayu.bracelet.BaseApplication;
 import com.huayu.bracelet.R;
 import com.huayu.bracelet.activity.IOnDataListener;
+import com.huayu.bracelet.activity.PublicActivity;
 import com.huayu.bracelet.adapter.ListItemAdapter;
 import com.huayu.bracelet.http.HttpUtil;
 import com.huayu.bracelet.view.NoScrollListView;
 import com.huayu.bracelet.vo.ListUserZoonInfo;
 import com.huayu.bracelet.vo.UserData;
 
-public class FriendCricleFragment extends Fragment{
+public class FriendCricleFragment extends Fragment implements OnClickListener{
 
 	private NoScrollListView friendLv;
 	private PullToRefreshScrollView friendPullScrollView;
+	private ImageView friendIvWrite;
 	private ListItemAdapter adapter;
 	private int pageSize=20;
 	private int index=0;
@@ -39,6 +44,8 @@ public class FriendCricleFragment extends Fragment{
 		View view = inflater.inflate(R.layout.fragment_friend, null);
 		friendPullScrollView = (PullToRefreshScrollView)view.findViewById(R.id.friendPullScrollView);
 		friendLv  = (NoScrollListView)view.findViewById(R.id.friendLv);
+		friendIvWrite = (ImageView)view.findViewById(R.id.friendIvWrite);
+		friendIvWrite.setOnClickListener(this);
 		friendPullScrollView.setMode(Mode.BOTH);  
 		adapter = new ListItemAdapter(getActivity(), null);
 		friendLv.setAdapter(adapter);
@@ -90,5 +97,19 @@ public class FriendCricleFragment extends Fragment{
 						}
 					}
 				});
+	}
+
+	@Override
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		switch (v.getId()) {
+		case R.id.friendIvWrite:
+			Intent intent = new Intent(getActivity(), PublicActivity.class);
+			getActivity().startActivity(intent);
+			break;
+
+		default:
+			break;
+		}
 	}
 }

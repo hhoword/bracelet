@@ -55,8 +55,8 @@ public class BaseApplication extends Application{
 
 	private void initImageLoader(){
 		DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder() //
-		.showImageForEmptyUri(R.drawable.ico_header_default) //
-		.showImageOnFail(R.drawable.ico_header_default) //
+//		.showImageForEmptyUri(R.drawable.ico_header_default) //
+//		.showImageOnFail(R.drawable.ico_header_default) //
 		.cacheInMemory(true) //
 		.cacheOnDisk(true) //
 		.build();//

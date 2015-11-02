@@ -81,16 +81,8 @@ public class ListItemAdapter extends BaseAdapter {
         holder.tvDate.setText(userZoonInfo.getZooninfo().getDatatime());
         holder.tvLevel.setText(userZoonInfo.getZooninfo().getUser_level()+"");
         // 使用ImageLoader加载网络图片
-        DisplayImageOptions options = new DisplayImageOptions.Builder()//
-                .showImageOnLoading(R.drawable.ico_header_default) // 加载中显示的默认图片
-                .showImageOnFail(R.drawable.ico_header_default) // 设置加载失败的默认图片
-                .cacheInMemory(true) // 内存缓存
-                .cacheOnDisk(true) // sdcard缓存
-                .bitmapConfig(Config.RGB_565)// 设置最低配置
-                .displayer(new RoundedBitmapDisplayer(30))
-                .build();//
         ImageLoader.getInstance().displayImage(userZoonInfo.getZooninfo().getUser_img_url(),
-                holder.iv_avatar, options);
+                holder.iv_avatar);
         final List<String> imageUrls = userZoonInfo.getZooninfo().getImg_url();
         if (imageUrls == null || imageUrls.size() == 0) { // 没有图片资源就隐藏GridView
             holder.gridview.setVisibility(View.GONE);
