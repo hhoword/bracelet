@@ -12,6 +12,7 @@ import android.widget.RadioGroup;
 import android.widget.RadioGroup.OnCheckedChangeListener;
 
 import com.huayu.bracelet.R;
+import com.huayu.bracelet.util.UpdateManager;
 
 
 public class MainActivity extends FragmentActivity {
@@ -86,6 +87,8 @@ public class MainActivity extends FragmentActivity {
 
 		fragmentTransaction.show(mFragments[0]).commit();  
 		mainRbtHome.setChecked(true);
+		UpdateManager manager = new UpdateManager(MainActivity.this);
+		manager.checkUpdate();
 	}
 
 	

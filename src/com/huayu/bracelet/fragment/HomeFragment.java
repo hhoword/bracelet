@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
@@ -50,7 +51,7 @@ public class HomeFragment extends Fragment implements OnClickListener{
 	private boolean isConnect = false;
 	private String stepInfo;
 	private String[] deviceInfo;
-	//	private ProgressDialog progressdialog;
+	private ProgressDialog progressdialog;
 	private Date d = new Date();  
 	private SimpleDateFormat ss ;
 	private String requestDate;
@@ -63,13 +64,16 @@ public class HomeFragment extends Fragment implements OnClickListener{
 		// TODO Auto-generated method stub
 		View view = inflater.inflate(R.layout.framgent_home, null);
 		ss = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");//12小时制  
-		//		progressdialog = new ProgressDialog(getActivity());
-		//		progressdialog.setCancelable(false);
+		progressdialog = new ProgressDialog(getActivity());
+		progressdialog.setCancelable(false);
 		homeTvSync = (TextView)view.findViewById(R.id.homeTvSync);
 		homeTvStep = (TextView)view.findViewById(R.id.homeTvStep);
 		homevTvDistance = (TextView)view.findViewById(R.id.homevTvDistance);
 		homeTvCalorie = (TextView)view.findViewById(R.id.homeTvCalorie);
 		homeTvAvgStep = (TextView)view.findViewById(R.id.homeTvAvgStep);
+		if(BaseApplication.getInstance().getStep()>0){
+			homeTvStep.setText(BaseApplication.getInstance().getStep()+"");
+		}
 		homeTvSync.setOnClickListener(this);
 		return view;
 	}
@@ -126,7 +130,7 @@ public class HomeFragment extends Fragment implements OnClickListener{
 				getActivity().runOnUiThread(new Runnable() {
 					public void run() {
 						isConnect = false;
-						//						progressdialog.dismiss();
+						progressdialog.dismiss();
 						Log.d(TAG, "UART_DISCONNECT_MSG");
 					}
 				});
@@ -153,12 +157,13 @@ public class HomeFragment extends Fragment implements OnClickListener{
 							int lastStep = BaseApplication.getInstance().getStep();
 							String asyncDate = BaseApplication.getInstance().getAsyncDate();
 							String text = new String(txValue, "UTF-8");
-//							Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT).show();
+							//							Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT).show();
 							stepInfo+=text;
 							deviceInfo = stepInfo.split(",");
 							if(deviceInfo!=null&&"BF#".equals(deviceInfo[deviceInfo.length-1])){
 								deviceInfo = stepInfo.split(",");
 								String step = deviceInfo[3];
+//								String step = "100";
 								String power = deviceInfo[5];
 								//保存电量
 								BaseApplication.getInstance().setPower(power);
@@ -167,14 +172,20 @@ public class HomeFragment extends Fragment implements OnClickListener{
 										setStep(step, lastStep);
 										//保存同步时间
 										BaseApplication.getInstance().setAsyncDate(ss.format(d));
+										saveStepInfo(step);
+										float distances = getDistances(BaseApplication.getInstance().getStep());
+										homevTvDistance.setText(distances+"");
+										homeTvCalorie.setText(getCalorie(distances));
 										//同步完成，上传步数
 										upLoadStep();
-										saveStepInfo(step);
 									}else{
 										if(BaseApplication.isSameday(ss.format(d),requestDate)){//请求时间如果是今天
 											setStep(step, lastStep);
 											//获取当前请求时间前一天时间作为请求时间
 											saveStepInfo(step);
+											float distances = getDistances(BaseApplication.getInstance().getStep());
+											homevTvDistance.setText(distances+"");
+											homeTvCalorie.setText(getCalorie(distances));
 											requestDate = BaseApplication.getSpecifiedDayBefore(requestDate);
 											sendMessage(requestDate);
 										}else{
@@ -193,6 +204,9 @@ public class HomeFragment extends Fragment implements OnClickListener{
 								}else{
 									setStep(step, lastStep);
 									saveStepInfo(step);
+									float distances = getDistances(BaseApplication.getInstance().getStep());
+									homevTvDistance.setText(distances+"");
+									homeTvCalorie.setText(getCalorie(distances));
 									//保存同步时间
 									BaseApplication.getInstance().setAsyncDate(ss.format(d));
 									//上传步数
@@ -204,6 +218,9 @@ public class HomeFragment extends Fragment implements OnClickListener{
 
 						} catch (Exception e) {
 							Log.e(TAG, e.toString());
+							progressdialog.dismiss();
+							Toast.makeText(getActivity(), "同步失败", Toast.LENGTH_SHORT).show();
+							stepInfo = "";
 						}
 					}
 				});
@@ -222,8 +239,11 @@ public class HomeFragment extends Fragment implements OnClickListener{
 		homeTvStep.setText(currentStep+"");
 	}
 	private void saveStepInfo(String step){
-		List<DeviceStepInfo> deviceStepInfos = new ArrayList<DeviceStepInfo>();
+		List<DeviceStepInfo> deviceStepInfos;
 		deviceStepInfos = BaseApplication.getInstance().getDeviceStepInfo();
+		if(deviceStepInfos==null){
+			deviceStepInfos = new ArrayList<DeviceStepInfo>();
+		}
 		DeviceStepInfo deviceStepInfo = new DeviceStepInfo();
 		deviceStepInfo.setDatetime(requestDate);
 		deviceStepInfo.setStepcount(step);
@@ -233,10 +253,14 @@ public class HomeFragment extends Fragment implements OnClickListener{
 		deviceStepInfos.add(deviceStepInfo);
 		BaseApplication.getInstance().setDeviceStepInfo(deviceStepInfos);
 	}
-	
+
 	private void upLoadStep(){
 		List<DeviceStepInfo> deviceStepInfos = new ArrayList<DeviceStepInfo>();
-		for(DeviceStepInfo deviceStepInfo : BaseApplication.getInstance().getDeviceStepInfo()){
+		List<DeviceStepInfo> datas = BaseApplication.getInstance().getDeviceStepInfo();
+		if(datas == null){
+			datas = new ArrayList<DeviceStepInfo>();
+		}
+		for(DeviceStepInfo deviceStepInfo : datas){
 			if(deviceStepInfo.getUid().equals(BaseApplication.getInstance()
 					.getUserData().getData().getUserinfo().getId()+"")){
 				deviceStepInfos.add(deviceStepInfo);
@@ -244,10 +268,11 @@ public class HomeFragment extends Fragment implements OnClickListener{
 		}
 		HttpUtil httpUtil = new HttpUtil();
 		httpUtil.postStepInfo(deviceStepInfos, new IOnDataListener<WeeKAvgStep>() {
-			
+
 			@Override
 			public void onDataResult(WeeKAvgStep t) {
 				// TODO Auto-generated method stub
+				progressdialog.dismiss();
 				if(t!=null){
 					if(t.getCode()==200){
 						if(t.getData().isStatus()){
@@ -262,7 +287,7 @@ public class HomeFragment extends Fragment implements OnClickListener{
 			}
 		});
 	}
-	
+
 	private void service_init() {
 		Intent bindIntent = new Intent(getActivity(), UartService.class);
 		getActivity().bindService(bindIntent, mServiceConnection, Context.BIND_AUTO_CREATE);
@@ -328,9 +353,9 @@ public class HomeFragment extends Fragment implements OnClickListener{
 				getActivity().startActivity(intent);
 				return;
 			}
-			//			progressdialog.setMessage("正在同步中...");
-			//			progressdialog.show();
-			Toast.makeText(getActivity(), "正在同步中...", Toast.LENGTH_LONG).show();
+			progressdialog.setMessage("正在同步中...");
+			progressdialog.show();
+			//			Toast.makeText(getActivity(), "正在同步中...", Toast.LENGTH_LONG).show();
 			requestDate = ss.format(d);
 			sendMessage(requestDate);
 			break;
@@ -338,6 +363,25 @@ public class HomeFragment extends Fragment implements OnClickListener{
 		default:
 			break;
 		}
+	}
+
+	private String getCalorie(float distances){
+		float weight = BaseApplication.getInstance()
+				.getUserData().getData().getUserinfo().getWeight();
+		int Calorie = (int) (weight*distances*1.036);
+		return Calorie/1000f+"";
+	}
+
+	private float getDistances(int Steps){
+		int sex = BaseApplication.getInstance()
+				.getUserData().getData().getUserinfo().getSex();
+		float distances;
+		if(sex == 0){
+			distances =  (float) (((float)Steps)*0.65);
+		}else{
+			distances =  (float) (((float)Steps)*0.75);
+		}
+		return distances/1000f;
 	}
 
 }

@@ -7,10 +7,13 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+
 import android.annotation.SuppressLint;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager.NameNotFoundException;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.huayu.bracelet.vo.DeviceStepInfo;
@@ -104,7 +107,7 @@ public class BaseApplication extends Application{
 	}
 
 	public List<DeviceStepInfo> getDeviceStepInfo(){
-		List<DeviceStepInfo> deviceStepInfos = new ArrayList<DeviceStepInfo>();
+		List<DeviceStepInfo> deviceStepInfos;
 		String deviceStepInfoString = sp.getString(DEVICESTEPINFO, "");
 		deviceStepInfos = gson.fromJson(deviceStepInfoString,
 				new TypeToken<List<DeviceStepInfo>>(){}.getType());
@@ -255,4 +258,32 @@ public class BaseApplication extends Application{
 			System.out.println("c1大于c2");*/
 		return result;
 	}
+	
+	/** 
+	 * 获取软件版本号 
+	 *  
+	 * @param context 
+	 * @return 
+	 */  
+	public static int getVersionCode(Context context){  
+		int versionCode = 0;  
+		try {  
+			// 获取软件版本号，对应AndroidManifest.xml下android:versionCode  
+			versionCode = context.getPackageManager().getPackageInfo("com.huayu.bracelet", 0).versionCode;  
+		} catch (NameNotFoundException e) {  
+			e.printStackTrace();  
+		}  
+		return versionCode;  
+	}  
+	
+	public static String getVersionName(Context context){  
+		String versionName = "";  
+		try {  
+			// 获取软件版本号，对应AndroidManifest.xml下android:versionName  
+			versionName = context.getPackageManager().getPackageInfo("com.huayu.bracelet", 0).versionName;  
+		} catch (NameNotFoundException e) {  
+			e.printStackTrace();  
+		}  
+		return versionName;  
+	}  
 }

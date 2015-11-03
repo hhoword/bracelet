@@ -13,6 +13,7 @@ import android.os.Handler;
 import com.huayu.bracelet.activity.IOnDataListener;
 import com.huayu.bracelet.vo.DeviceStepInfo;
 import com.huayu.bracelet.vo.ListUserZoonInfo;
+import com.huayu.bracelet.vo.UpdateInfo;
 import com.huayu.bracelet.vo.UserData;
 import com.huayu.bracelet.vo.WeeKAvgStep;
 
@@ -22,8 +23,8 @@ public class HttpUtil {
 	public static ExecutorService fixedThreadPool = Executors.newFixedThreadPool(5);
 	private static final int post = 0;
 	private static final int get = 1;
-//	private String url = "http://192.168.0.109:54242";
-	private String url = "http://203.195.137.93:54242";
+	public static final String url = "http://192.168.0.109:54242";
+//	public static final String url = "http://203.195.137.93:54242";
 //	private String url2 = "http://14.23.85.254:9000/my1";
 
 	public HttpUtil() {
@@ -57,7 +58,7 @@ public class HttpUtil {
 	
 	public void postStepInfo(List<DeviceStepInfo> deviceStepInfos,IOnDataListener<WeeKAvgStep> dataListener){
 		HttpThread<WeeKAvgStep, List<DeviceStepInfo>> httpThread = new HttpThread<WeeKAvgStep,
-				List<DeviceStepInfo>>(url+"/Step/UpdateStep", get, deviceStepInfos, WeeKAvgStep.class,
+				List<DeviceStepInfo>>(url+"/Step/UpdateStep", post, deviceStepInfos, WeeKAvgStep.class,
 						MediaType.APPLICATION_JSON);
 		httpThread.setDataListener(dataListener);
 		fixedThreadPool.execute(httpThread);
@@ -90,6 +91,13 @@ public class HttpUtil {
 		fixedThreadPool.execute(httpThread);
 	}
 	
+	
+	public void getCheckUpdate(IOnDataListener<UpdateInfo> dataListener){
+		HttpThread<UpdateInfo, String> httpThread = new HttpThread<UpdateInfo, String>(
+						url+"/CheckUpdate",get, null,UpdateInfo.class,MediaType.TEXT_PLAIN);
+		httpThread.setDataListener(dataListener);
+		fixedThreadPool.execute(httpThread);
+	}
 	
 	/*public void test(String username ,String pwd,
 			IOnDataListener<UserInfo> dataListener){

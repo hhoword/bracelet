@@ -16,7 +16,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.Handler;
@@ -24,9 +23,12 @@ import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
+import com.huayu.bracelet.BaseApplication;
 import com.huayu.bracelet.R;
+import com.huayu.bracelet.activity.IOnDataListener;
+import com.huayu.bracelet.http.HttpUtil;
+import com.huayu.bracelet.vo.UpdateInfo;
 
 public class UpdateManager {
 	/* 下载中 */  
@@ -77,62 +79,26 @@ public class UpdateManager {
 	 */  
 	public void checkUpdate()  
 	{  
-		if (isUpdate()){  
-			// 显示提示对话框  
-			showNoticeDialog();  
-		} else {  
-//			Toast.makeText(mContext, R.string.soft_update_no, Toast.LENGTH_LONG).show();  
-		}  
-	}  
-
-	/** 
-	 * 检查软件是否有更新版本 
-	 *  
-	 * @return 
-	 */  
-	private boolean isUpdate()  
-	{  
-		// 获取当前软件版本  
-		int versionCode = getVersionCode(mContext);  
-		// 把version.xml放到网络上，然后获取文件信息  
-//		InputStream inStream = ParseXmlService.class.getClassLoader().getResourceAsStream("version.xml");  
-		// 解析XML文件。 由于XML文件比较小，因此使用DOM方式进行解析  
-//		ParseXmlService service = new ParseXmlService();  
-		try  
-		{  
-//			mHashMap = service.parseXml(inStream);  
-		} catch (Exception e)  
-		{  
-			e.printStackTrace();  
-		}  
-		if (null != mHashMap)  {  
-			int serviceCode = Integer.valueOf(mHashMap.get("version"));  
-			// 版本判断  
-			if (serviceCode > versionCode) {  
-				return true;  
-			}  
-		}  
-		return false;  
-	}  
-
-	/** 
-	 * 获取软件版本号 
-	 *  
-	 * @param context 
-	 * @return 
-	 */  
-	private int getVersionCode(Context context)  
-	{  
-		int versionCode = 0;  
-		try  
-		{  
-			// 获取软件版本号，对应AndroidManifest.xml下android:versionCode  
-			versionCode = context.getPackageManager().getPackageInfo("com.huayu.bracelet", 0).versionCode;  
-		} catch (NameNotFoundException e)  
-		{  
-			e.printStackTrace();  
-		}  
-		return versionCode;  
+		
+		HttpUtil httpUtil = new HttpUtil();
+		httpUtil.getCheckUpdate(new IOnDataListener<UpdateInfo>() {
+			
+			@Override
+			public void onDataResult(UpdateInfo t) {
+				// TODO Auto-generated method stub
+				if(t!=null&&t.getCode()==200){
+					int versionCode = BaseApplication.getVersionCode(mContext);  
+					mHashMap = new HashMap<String, String>();
+					mHashMap.put("name", t.getData().getVer());
+					mHashMap.put("url", t.getData().getUrl());
+					int serviceCode = Integer.valueOf(mHashMap.get("name"));  
+					// 版本判断  
+					if (serviceCode > versionCode) {  
+						showNoticeDialog();  
+					} 
+				}
+			}
+		});
 	}  
 
 	/** 
@@ -145,7 +111,7 @@ public class UpdateManager {
 		builder.setTitle("应用更新");  
 		builder.setMessage("应用更新啦，立马下载看看"); 
 		// 更新  
-		builder.setPositiveButton("下载更新", new OnClickListener()  
+		builder.setPositiveButton("立刻更新", new OnClickListener()  
 		{  
 			@Override  
 			public void onClick(DialogInterface dialog, int which)  
@@ -227,7 +193,7 @@ public class UpdateManager {
 					// 获得存储卡的路径  
 					String sdpath = Environment.getExternalStorageDirectory() + "/";  
 					mSavePath = sdpath + "download";  
-					URL url = new URL(mHashMap.get("url"));  
+					URL url = new URL(HttpUtil.url+"/"+mHashMap.get("url"));  
 					// 创建连接  
 					HttpURLConnection conn = (HttpURLConnection) url.openConnection();  
 					conn.connect();  
@@ -242,7 +208,7 @@ public class UpdateManager {
 					{  
 						file.mkdir();  
 					}  
-					File apkFile = new File(mSavePath, mHashMap.get("name"));  
+					File apkFile = new File(mSavePath, "bracelet"+mHashMap.get("name")+".apk");  
 					FileOutputStream fos = new FileOutputStream(apkFile);  
 					int count = 0;  
 					// 缓存  

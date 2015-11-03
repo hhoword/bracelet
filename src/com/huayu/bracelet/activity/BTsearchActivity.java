@@ -169,7 +169,7 @@ public class BTsearchActivity extends PActivity implements OnClickListener{
 
 		@SuppressLint("NewApi") @Override
 		public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-			mBluetoothAdapter.stopLeScan(mLeScanCallback);
+//			mBluetoothAdapter.stopLeScan(mLeScanCallback);
 			boolean isBind = false;
 			final String mac =  deviceList.get(position).getAddress();
 			devicesInfos = BaseApplication.getInstance().getDevicesInfo();
@@ -308,6 +308,7 @@ public class BTsearchActivity extends PActivity implements OnClickListener{
 			scanLeDevice(true);
 			break;
 		case R.id.SearchTvUndo:
+			BaseApplication.devicesId = "";
 			Intent intent = new Intent(BTsearchActivity.this, MainActivity.class);
 			startActivity(intent);
 			finish();
