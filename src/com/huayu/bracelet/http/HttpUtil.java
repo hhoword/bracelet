@@ -23,8 +23,8 @@ public class HttpUtil {
 	public static ExecutorService fixedThreadPool = Executors.newFixedThreadPool(5);
 	private static final int post = 0;
 	private static final int get = 1;
-	public static final String url = "http://192.168.0.109:54242";
-//	public static final String url = "http://203.195.137.93:54242";
+//	public static final String url = "http://192.168.0.109:54242";
+	public static final String url = "http://203.195.137.93:54242";
 //	private String url2 = "http://14.23.85.254:9000/my1";
 
 	public HttpUtil() {
