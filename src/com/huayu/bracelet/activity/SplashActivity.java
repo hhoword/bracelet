@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.huayu.bracelet.BaseApplication;
 import com.huayu.bracelet.R;
+import com.huayu.bracelet.http.HttpUtil;
 import com.huayu.bracelet.vo.UserData;
 
 public class SplashActivity extends PActivity{
@@ -32,6 +33,20 @@ public class SplashActivity extends PActivity{
 					mainIntent = new Intent(SplashActivity.this, LoginActivity.class);
 					SplashActivity.this.startActivity(mainIntent);
 				}else{
+					HttpUtil httpUtil = new HttpUtil();
+					httpUtil.login(info.getData().getUserinfo().getName(),
+							info.getData().getUserinfo().getPwd(), new IOnDataListener<UserData>() {
+						
+						@Override
+						public void onDataResult(UserData t) {
+							// TODO Auto-generated method stub
+							if(t!=null){
+								if(t.getCode()==200){
+									BaseApplication.getInstance().setUserInfo(t);
+								}
+							}
+						}
+					});
 					if (mBtAdapter == null) {
 						Toast.makeText(SplashActivity.this, "蓝牙不可用", Toast.LENGTH_LONG).show();
 						mainIntent = new Intent(SplashActivity.this, MainActivity.class);
