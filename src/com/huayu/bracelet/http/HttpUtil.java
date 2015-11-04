@@ -84,7 +84,7 @@ public class HttpUtil {
 	public void postFriendTalk(String id,String text,List<String> files,
 			IOnDataListener<ZoonInfo> dataListener){
 		MultiValueMap<String, Object> data = new LinkedMultiValueMap<String, Object>();
-//		data.add("userid", id);
+		data.add("uid", id);
 		data.add("text", text);
 		int size = files.size();
 		for(int i = 0 ; i<size ; i++){
@@ -93,7 +93,7 @@ public class HttpUtil {
 		}
 		HttpThread<ZoonInfo, MultiValueMap<String, Object>> httpThread = 
 				new HttpThread<ZoonInfo, MultiValueMap<String, Object>>(
-						url+"/UserZoon/GetZoonByPage",post, data,ZoonInfo.class,MediaType.MULTIPART_FORM_DATA);
+						url+"/UserZoon/Add",post, data,ZoonInfo.class,MediaType.MULTIPART_FORM_DATA);
 		httpThread.setDataListener(dataListener);
 		fixedThreadPool.execute(httpThread);
 	}

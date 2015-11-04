@@ -62,6 +62,9 @@
         <activity android:name=".activity.PublicActivity"></activity>
         <activity android:name=".activity.BindActivity"></activity>
         <activity android:name=".activity.UserInfoActivity"></activity>
+        <activity android:name=".activity.ImagePagerActivity"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Holo.Light.NoActionBar"></activity>
         
     </application>
 

@@ -16,6 +16,7 @@ import android.widget.TextView;
 import com.huayu.bracelet.BaseApplication;
 import com.huayu.bracelet.R;
 import com.huayu.bracelet.activity.ImagePagerActivity;
+import com.huayu.bracelet.http.HttpUtil;
 import com.huayu.bracelet.view.NoScrollGridView;
 import com.huayu.bracelet.vo.ListUserZoonInfo;
 
@@ -78,7 +79,8 @@ public class ListItemAdapter extends BaseAdapter {
         holder.tvDate.setText(userZoonInfo.getZooninfo().getDatatime());
         holder.tvLevel.setText(userZoonInfo.getZooninfo().getUser_level()+"");
         // 使用ImageLoader加载网络图片
-        BaseApplication.getImageByloader(mContext, userZoonInfo.getZooninfo().getUser_img_url(),
+        BaseApplication.getImageByloader(mContext, HttpUtil.url+"/"+
+        userZoonInfo.getZooninfo().getUser_img_url(),
         		holder.iv_avatar, R.drawable.ico_header_default);
         final List<String> imageUrls = userZoonInfo.getZooninfo().getImg_url();
         if (imageUrls == null || imageUrls.size() == 0) { // 没有图片资源就隐藏GridView

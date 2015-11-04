@@ -8,6 +8,7 @@ import java.util.List;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
@@ -19,11 +20,12 @@ import android.view.View.OnClickListener;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.huayu.bracelet.BaseApplication;
 import com.huayu.bracelet.R;
 import com.huayu.bracelet.adapter.MyAdapter;
-import com.huayu.bracelet.adapter.NoScrollGridAdapter;
+import com.huayu.bracelet.adapter.PublicImageAdapter;
 import com.huayu.bracelet.http.HttpUtil;
 import com.huayu.bracelet.view.NoScrollGridView;
 import com.huayu.bracelet.vo.ZoonInfo;
@@ -34,11 +36,11 @@ public class PublicActivity extends PActivity implements OnClickListener{
 	private TextView pubTvPublish;
 	private EditText pubEtTalk;
 	private NoScrollGridView pubGVImages;
-	private NoScrollGridAdapter adapter ;
+	private PublicImageAdapter adapter ;
 	private List<String> iamgePaths;
-	private List<String> showImagePaths;
-	private File tempFile = new File(Environment.getExternalStorageDirectory(),
-			"huayu/"+getPhotoFileName());
+//	private List<String> showImagePaths;
+	private File tempFile;
+	private ProgressDialog progressDialog ;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -49,11 +51,21 @@ public class PublicActivity extends PActivity implements OnClickListener{
 		pubTvPublish = (TextView)findViewById(R.id.pubTvPublish);
 		pubEtTalk = (EditText)findViewById(R.id.pubEtTalk);
 		pubGVImages = (NoScrollGridView)findViewById(R.id.pubGVImages);
+		progressDialog = new ProgressDialog(this);
+		progressDialog.setCancelable(false);
 		pubIvPhoto.setOnClickListener(this);
 		pubTvPublish.setOnClickListener(this);
+		File file = new File(Environment.getExternalStorageDirectory(),"huayu");
+		if(!file.isDirectory()){
+			file.mkdirs();
+		}
+		tempFile = new File(Environment.getExternalStorageDirectory(),
+				"huayu/"+getPhotoFileName());
+		
 		iamgePaths = new ArrayList<String>();
-		showImagePaths = new ArrayList<String>();
-		adapter =  new NoScrollGridAdapter(this,showImagePaths);
+//		showImagePaths = new ArrayList<String>();
+		adapter =  new PublicImageAdapter(this,iamgePaths);
+		MyAdapter.mSelectedImage.clear();
 		pubGVImages.setAdapter(adapter);
 	}
 
@@ -63,11 +75,11 @@ public class PublicActivity extends PActivity implements OnClickListener{
 		super.onResume();
 		if(MyAdapter.mSelectedImage!=null&&MyAdapter.mSelectedImage.size()>0){
 			iamgePaths.clear();
-			showImagePaths.clear();
-			iamgePaths.addAll(iamgePaths);
-			for(String path : iamgePaths){
-				showImagePaths.add("file://" +path);
-			}
+//			showImagePaths.clear();
+			iamgePaths.addAll(MyAdapter.mSelectedImage);
+//			for(String path : iamgePaths){
+//				showImagePaths.add("file:/" +path);
+//			}
 			adapter.notifyDataSetChanged();
 		}
 	}
@@ -112,12 +124,42 @@ public class PublicActivity extends PActivity implements OnClickListener{
 		super.onActivityResult(requestCode, resultCode, data);
 		if (resultCode == Activity.RESULT_OK) { 
 			iamgePaths.add(tempFile.getAbsolutePath());
-			showImagePaths.add("file://" +tempFile.getAbsolutePath());
+//			showImagePaths.add("file:/" +tempFile.getAbsolutePath());
+			MyAdapter.mSelectedImage.add(tempFile.getAbsolutePath());
 			adapter.notifyDataSetChanged();
 			tempFile = new File(Environment.getExternalStorageDirectory(),getPhotoFileName());
 		}
 	}
 
+	private void postData(){
+		progressDialog.setMessage("发布中...");
+		progressDialog.show();
+		HttpUtil httpUtil = new HttpUtil();
+		httpUtil.postFriendTalk(BaseApplication.getInstance().getUserData().
+				getData().getUserinfo().getId()+"",
+				pubEtTalk.getText().toString(),
+				iamgePaths, new IOnDataListener<ZoonInfo>() {
+					
+					@Override
+					public void onDataResult(ZoonInfo t) {
+						// TODO Auto-generated method stub
+						progressDialog.dismiss();
+						if(t!=null){
+							if(t.getCode()==200){
+								Intent intent = new Intent(PublicActivity.this, MainActivity.class);
+								intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+								startActivity(intent);
+								Toast.makeText(PublicActivity.this, "发布成功",
+										Toast.LENGTH_SHORT).show();
+							}
+						}else{
+							Toast.makeText(PublicActivity.this, "连接失败，请重试",
+									Toast.LENGTH_SHORT).show();
+						}
+					}
+				});
+	}
+	
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
@@ -126,25 +168,11 @@ public class PublicActivity extends PActivity implements OnClickListener{
 			showPhotoDialog();
 			break;
 		case R.id.pubTvPublish:
-			if(pubEtTalk.getText().toString().length()>0){
-				HttpUtil httpUtil = new HttpUtil();
-				httpUtil.postFriendTalk(BaseApplication.getInstance().getUserData().
-						getData().getUserinfo().getId()+"",
-						pubEtTalk.getText().toString(),
-						iamgePaths, new IOnDataListener<ZoonInfo>() {
-							
-							@Override
-							public void onDataResult(ZoonInfo t) {
-								// TODO Auto-generated method stub
-								if(t!=null){
-									if(t.getCode()==200){
-										Intent intent = new Intent(PublicActivity.this, MainActivity.class);
-										intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-										startActivity(intent);
-									}
-								}
-							}
-						});
+			if(pubEtTalk.getText().toString().length()>0||iamgePaths.size()>0){
+				postData();
+			}else{
+				Toast.makeText(PublicActivity.this, "请输入一段说说或者发表一张图片！",
+						Toast.LENGTH_SHORT).show();
 			}
 			break;
 		default:

@@ -10,6 +10,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 
 import com.huayu.bracelet.R;
+import com.huayu.bracelet.http.HttpUtil;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -47,12 +48,14 @@ public class NoScrollGridAdapter extends BaseAdapter {
 		View view = View.inflate(context, R.layout.friend_grid_item, null);
         ImageView imageView = (ImageView) view.findViewById(R.id.friendIvPhoto);
         DisplayImageOptions options = new DisplayImageOptions.Builder()//
+		        .showImageForEmptyUri(R.drawable.pictures_no)	// 设置图片Uri为空或是错误的时候显示的图片
+				.showImageOnFail(R.drawable.pictures_no)		// 设置图片加载或解码过程中发生错误显示的图片	
                 .cacheInMemory(true)//
                 .cacheOnDisk(true)//
                 .bitmapConfig(Config.RGB_565)//
                 .build();
-        ImageLoader.getInstance().displayImage(imageUrls.get(position),
-                imageView, options);
+        ImageLoader.getInstance().displayImage(HttpUtil.url+"/"+
+                imageUrls.get(position),imageView, options);
         return view;
 	}
 

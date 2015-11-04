@@ -79,7 +79,7 @@ public class FriendCricleFragment extends Fragment implements OnClickListener{
 		listUserZoonInfo = new ArrayList<ListUserZoonInfo>();
 		adapter = new ListItemAdapter(getActivity(), listUserZoonInfo);
 		friendLv.setAdapter(adapter);
-		getCircleData();
+//		getCircleData();
 	}
 	
 	@Override

@@ -1,9 +1,10 @@
 package com.huayu.bracelet.http;
 
+import android.annotation.SuppressLint;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.springframework.http.ContentCodingType;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -11,6 +12,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.GsonHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 /**
@@ -54,28 +57,28 @@ public class SpringProxy<T,V> {
 	public T postData(String url, Class<T> type, V values){
 		try {
 			HttpHeaders headers = headers(contentType, MediaType.APPLICATION_JSON);
-//			if (WorkDataCenter.mCsrftoken.length() > 0) {
-//				headers.add("X-CSRFToken", WorkDataCenter.mCsrftoken);
-//			}
+			//			if (WorkDataCenter.mCsrftoken.length() > 0) {
+			//				headers.add("X-CSRFToken", WorkDataCenter.mCsrftoken);
+			//			}
 			HttpEntity<V> entity = new HttpEntity<V>(values, headers);
 			RestTemplate restTemplate = getRestTemplate();			 
 			ResponseEntity<T> responseEntity = restTemplate.exchange(url, HttpMethod.POST, entity, type);
-			
-//			HttpHeaders headersBack = responseEntity.getHeaders();
-//			List<String> cookies = headersBack.get("Set-Cookie");
-//			if(cookies!=null){
-//				for(String cookie : cookies){
-//					for(String info :cookie.split(";")){
-//						if(info.contains("csrftoken")){
-//							WorkDataCenter.header+=info+";";
-//							WorkDataCenter.mCsrftoken =  info.substring(10,info.length());
-//						}else if(info.contains("sessionid")){
-//							WorkDataCenter.header+=info+";";
-//							WorkDataCenter.sessionid=info.substring(10,info.length());
-//						}
-//					}
-//				}
-//			}
+
+			//			HttpHeaders headersBack = responseEntity.getHeaders();
+			//			List<String> cookies = headersBack.get("Set-Cookie");
+			//			if(cookies!=null){
+			//				for(String cookie : cookies){
+			//					for(String info :cookie.split(";")){
+			//						if(info.contains("csrftoken")){
+			//							WorkDataCenter.header+=info+";";
+			//							WorkDataCenter.mCsrftoken =  info.substring(10,info.length());
+			//						}else if(info.contains("sessionid")){
+			//							WorkDataCenter.header+=info+";";
+			//							WorkDataCenter.sessionid=info.substring(10,info.length());
+			//						}
+			//					}
+			//				}
+			//			}
 			return responseEntity.getBody();
 		} catch (Exception e) {
 			// TODO: handle exception
@@ -97,9 +100,9 @@ public class SpringProxy<T,V> {
 		}
 
 	}
-	
-	
-	
+
+
+
 	/**
 	 * 设置httpheader
 	 * @param contentType
@@ -111,7 +114,7 @@ public class SpringProxy<T,V> {
 		//设置传输媒体类型
 		requestHeaders.setContentType(contentType);
 
-//		requestHeaders.add("Content-Type", "charset=utf-8");
+		//		requestHeaders.add("Content-Type", "charset=utf-8");
 		requestHeaders.setContentEncoding(ContentCodingType.valueOf("utf-8"));
 
 		//设置接收媒体类型
@@ -128,6 +131,7 @@ public class SpringProxy<T,V> {
 		return requestHeaders;
 	}
 
+	@SuppressLint("NewApi")
 	private static synchronized RestTemplate getRestTemplate(){
 		if(restTemplate == null){
 			HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory();
@@ -136,6 +140,20 @@ public class SpringProxy<T,V> {
 			restTemplate = new RestTemplate(true);
 			restTemplate.setRequestFactory(requestFactory);
 			restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
+			List<HttpMessageConverter<?>> converterList=restTemplate.getMessageConverters();
+			HttpMessageConverter<?> converterTarget = null;
+			for (HttpMessageConverter<?> item : converterList) {
+				if (item.getClass() == StringHttpMessageConverter.class) {
+					converterTarget = item;
+					break;
+				}
+			}
+
+			if (converterTarget != null) {
+				converterList.remove(converterTarget);
+			}
+			HttpMessageConverter<?> converter = new StringHttpMessageConverter(StandardCharsets.UTF_8);
+			converterList.add(converter);
 		}
 		return restTemplate;
 	}

@@ -1,6 +1,5 @@
 package com.huayu.bracelet.activity;
 
-import android.bluetooth.BluetoothDevice;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;

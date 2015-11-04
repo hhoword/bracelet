@@ -35,14 +35,6 @@ public class MeFragment extends Fragment implements OnClickListener{
 		meTvName= (TextView)view.findViewById(R.id.meTvName);
 		meLayoutChange = (LinearLayout)view.findViewById(R.id.meLayoutChange);
 		meBtnInfo = (Button)view.findViewById(R.id.meBtnInfo);
-		meTvVersion.setText(BaseApplication.getVersionName(getActivity()));
-		meTvPower.setText(BaseApplication.getInstance().getPower());
-		meLayoutChange.setOnClickListener(this);
-		meBtnInfo.setOnClickListener(this);
-		UserData info = BaseApplication.getInstance().getUserData();
-		if(info!=null){
-			meTvName.setText(info.getData().getUserinfo().getName());
-		}
 		return view;
 	}
 
@@ -50,6 +42,16 @@ public class MeFragment extends Fragment implements OnClickListener{
 	public void onHiddenChanged(boolean hidden) {
 		// TODO Auto-generated method stub
 		super.onHiddenChanged(hidden);
+		if(!hidden){
+			meTvVersion.setText(BaseApplication.getVersionName(getActivity()));
+			meTvPower.setText(BaseApplication.getInstance().getPower());
+			meLayoutChange.setOnClickListener(this);
+			meBtnInfo.setOnClickListener(this);
+			UserData info = BaseApplication.getInstance().getUserData();
+			if(info!=null){
+				meTvName.setText(info.getData().getUserinfo().getName());
+			}
+		}
 	}
 	
 	@Override

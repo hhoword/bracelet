@@ -13,7 +13,10 @@ import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.GridView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.huayu.bracelet.R;
@@ -23,7 +26,7 @@ import com.huayu.bracelet.adapter.MyAdapter;
 public class ImageBrowseActivity extends PActivity{
 
 	private ProgressDialog mProgressDialog;
-
+	private TextView broTvConfirm;
 	/**
 	 * 存储文件夹中的图片数量
 	 */
@@ -82,8 +85,16 @@ public class ImageBrowseActivity extends PActivity{
 	 */
 	private void initView()
 	{
+		broTvConfirm = (TextView)findViewById(R.id.broTvConfirm);
 		mGirdView = (GridView) findViewById(R.id.id_gridView);
-
+		broTvConfirm.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				finish();
+			}
+		});
 	}
 
 
