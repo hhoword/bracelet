@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -16,6 +18,7 @@ import com.huayu.bracelet.vo.ListUserZoonInfo;
 import com.huayu.bracelet.vo.UpdateInfo;
 import com.huayu.bracelet.vo.UserData;
 import com.huayu.bracelet.vo.WeeKAvgStep;
+import com.huayu.bracelet.vo.ZoonInfo;
 
 public class HttpUtil {
 
@@ -72,21 +75,25 @@ public class HttpUtil {
 		data.add("pagesize", pagesize);
 		HttpThread<ListUserZoonInfo, MultiValueMap<String, String>> httpThread = 
 				new HttpThread<ListUserZoonInfo, MultiValueMap<String, String>>(
-						url+"/UserZoon/GetZoonByPage",0, data,ListUserZoonInfo.class,MediaType.MULTIPART_FORM_DATA);
+						url+"/UserZoon/GetZoonByPage",post, data,ListUserZoonInfo.class,MediaType.MULTIPART_FORM_DATA);
 		httpThread.setDataListener(dataListener);
 		fixedThreadPool.execute(httpThread);
 	}
 	
 	
-	public void postFriendTalk(String id,String index,String pagesize,
-			IOnDataListener<ListUserZoonInfo> dataListener){
-		MultiValueMap<String, String> data = new LinkedMultiValueMap<String, String>();
-		data.add("userid", id);
-		data.add("page", index);
-		data.add("pagesize", pagesize);
-		HttpThread<ListUserZoonInfo, MultiValueMap<String, String>> httpThread = 
-				new HttpThread<ListUserZoonInfo, MultiValueMap<String, String>>(
-						url+"/UserZoon/GetZoonByPage",0, data,ListUserZoonInfo.class,MediaType.MULTIPART_FORM_DATA);
+	public void postFriendTalk(String id,String text,List<String> files,
+			IOnDataListener<ZoonInfo> dataListener){
+		MultiValueMap<String, Object> data = new LinkedMultiValueMap<String, Object>();
+//		data.add("userid", id);
+		data.add("text", text);
+		int size = files.size();
+		for(int i = 0 ; i<size ; i++){
+			Resource resource = new FileSystemResource(files.get(i));
+			data.add("pic"+i, resource);
+		}
+		HttpThread<ZoonInfo, MultiValueMap<String, Object>> httpThread = 
+				new HttpThread<ZoonInfo, MultiValueMap<String, Object>>(
+						url+"/UserZoon/GetZoonByPage",post, data,ZoonInfo.class,MediaType.MULTIPART_FORM_DATA);
 		httpThread.setDataListener(dataListener);
 		fixedThreadPool.execute(httpThread);
 	}

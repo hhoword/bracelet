@@ -5,7 +5,6 @@ import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap.Config;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -14,13 +13,11 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.huayu.bracelet.BaseApplication;
 import com.huayu.bracelet.R;
 import com.huayu.bracelet.activity.ImagePagerActivity;
 import com.huayu.bracelet.view.NoScrollGridView;
 import com.huayu.bracelet.vo.ListUserZoonInfo;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 
 /**
  * 首页ListView的数据适配器
@@ -81,8 +78,8 @@ public class ListItemAdapter extends BaseAdapter {
         holder.tvDate.setText(userZoonInfo.getZooninfo().getDatatime());
         holder.tvLevel.setText(userZoonInfo.getZooninfo().getUser_level()+"");
         // 使用ImageLoader加载网络图片
-        ImageLoader.getInstance().displayImage(userZoonInfo.getZooninfo().getUser_img_url(),
-                holder.iv_avatar);
+        BaseApplication.getImageByloader(mContext, userZoonInfo.getZooninfo().getUser_img_url(),
+        		holder.iv_avatar, R.drawable.ico_header_default);
         final List<String> imageUrls = userZoonInfo.getZooninfo().getImg_url();
         if (imageUrls == null || imageUrls.size() == 0) { // 没有图片资源就隐藏GridView
             holder.gridview.setVisibility(View.GONE);

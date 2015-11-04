@@ -29,31 +29,51 @@
             android:gravity="center"
             android:paddingLeft="10dp"
             android:paddingRight="10dp"
-            android:text="发送"
+            android:text="发表"
             android:textColor="@color/white" />
     </RelativeLayout>
 
-    <LinearLayout
+    <ScrollView
+        android:id="@+id/scrollView1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:orientation="vertical" >
+        android:layout_height="wrap_content" >
 
-        <EditText
-            android:id="@+id/editText1"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:ems="10"
-            android:hint="说点什么吧....."
-            android:maxEms="150" />
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:padding="10dp" >
 
-        <ImageView
-            android:id="@+id/pubIvPhoto"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:layout_marginTop="30dp"
-            android:src="@drawable/public_icon_addpic_unfocused" />
-    </LinearLayout>
+            <EditText
+                android:id="@+id/pubEtTalk"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:ems="10"
+                android:hint="说点什么吧....."
+                android:maxEms="150" />
+
+            <ImageView
+                android:id="@+id/pubIvPhoto"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_marginTop="30dp"
+                android:src="@drawable/public_icon_addpic_unfocused" />
+
+            <com.huayu.bracelet.view.NoScrollGridView
+                android:id="@+id/pubGVImages"
+                android:layout_width="220dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="3dp"
+                android:columnWidth="70dp"
+                android:gravity="center"
+                android:horizontalSpacing="2.5dp"
+                android:numColumns="3"
+                android:stretchMode="columnWidth"
+                android:verticalSpacing="2.5dp" >
+            </com.huayu.bracelet.view.NoScrollGridView>
+        </LinearLayout>
+    </ScrollView>
 
 </LinearLayout>

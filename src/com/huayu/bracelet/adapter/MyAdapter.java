@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.huayu.bracelet.R;
 import com.huayu.bracelet.util.ViewHolder;
@@ -53,9 +54,13 @@ public class MyAdapter extends CommonAdapter<String>
 					mSelect.setImageResource(R.drawable.picture_unselected);
 					mImageView.setColorFilter(null);
 				} else{
-					mSelectedImage.add( item);
-					mSelect.setImageResource(R.drawable.pictures_selected);
-					mImageView.setColorFilter(Color.parseColor("#77000000"));
+					if(mSelectedImage.size()>=9){
+						Toast.makeText(mContext, "最多只能选择9张", Toast.LENGTH_SHORT).show();
+					}else{
+						mSelectedImage.add( item);
+						mSelect.setImageResource(R.drawable.pictures_selected);
+						mImageView.setColorFilter(Color.parseColor("#77000000"));
+					}
 				}
 			}
 		});

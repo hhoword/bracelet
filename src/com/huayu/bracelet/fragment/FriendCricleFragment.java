@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.ScrollView;
+import android.widget.Toast;
 
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshBase.Mode;
@@ -76,7 +77,18 @@ public class FriendCricleFragment extends Fragment implements OnClickListener{
 		// TODO Auto-generated method stub
 		super.onActivityCreated(savedInstanceState);
 		listUserZoonInfo = new ArrayList<ListUserZoonInfo>();
+		adapter = new ListItemAdapter(getActivity(), listUserZoonInfo);
+		friendLv.setAdapter(adapter);
 		getCircleData();
+	}
+	
+	@Override
+	public void onHiddenChanged(boolean hidden) {
+		// TODO Auto-generated method stub
+		super.onHiddenChanged(hidden);
+		if(!hidden){
+			getCircleData();
+		}
 	}
 	
 	private void getCircleData(){
@@ -91,9 +103,12 @@ public class FriendCricleFragment extends Fragment implements OnClickListener{
 						if(t!=null){
 							if(t.getData()!=null){
 								listUserZoonInfo.addAll(t.getData());
-								adapter = new ListItemAdapter(getActivity(), listUserZoonInfo);
-								friendLv.setAdapter(adapter);
+//								adapter = new ListItemAdapter(getActivity(), listUserZoonInfo);
+//								friendLv.setAdapter(adapter);
+								adapter.notifyDataSetChanged();
 							}
+						}else{
+							Toast.makeText(getActivity(),"连接失败，请重试 ！", Toast.LENGTH_LONG).show();
 						}
 					}
 				});

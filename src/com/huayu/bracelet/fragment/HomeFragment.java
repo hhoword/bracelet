@@ -73,6 +73,9 @@ public class HomeFragment extends Fragment implements OnClickListener{
 		homeTvAvgStep = (TextView)view.findViewById(R.id.homeTvAvgStep);
 		if(BaseApplication.getInstance().getStep()>0){
 			homeTvStep.setText(BaseApplication.getInstance().getStep()+"");
+			float distances = getDistances(BaseApplication.getInstance().getStep());
+			homevTvDistance.setText(distances+"");
+			homeTvCalorie.setText(getCalorie(distances));
 		}
 		homeTvSync.setOnClickListener(this);
 		return view;
@@ -163,8 +166,11 @@ public class HomeFragment extends Fragment implements OnClickListener{
 							if(deviceInfo!=null&&"BF#".equals(deviceInfo[deviceInfo.length-1])){
 								deviceInfo = stepInfo.split(",");
 								String step = deviceInfo[3];
+								String requestDate = deviceInfo[4];
 //								String step = "100";
 								String power = deviceInfo[5];
+								//清除计步器数据
+								sendClearRequest(requestDate);
 								//保存电量
 								BaseApplication.getInstance().setPower(power);
 								if(!TextUtils.isEmpty(asyncDate)){//如果有上次同步时间点
@@ -172,7 +178,7 @@ public class HomeFragment extends Fragment implements OnClickListener{
 										setStep(step, lastStep);
 										//保存同步时间
 										BaseApplication.getInstance().setAsyncDate(ss.format(d));
-										saveStepInfo(step);
+										saveStepInfo(homeTvStep.getText().toString());
 										float distances = getDistances(BaseApplication.getInstance().getStep());
 										homevTvDistance.setText(distances+"");
 										homeTvCalorie.setText(getCalorie(distances));
@@ -182,7 +188,7 @@ public class HomeFragment extends Fragment implements OnClickListener{
 										if(BaseApplication.isSameday(ss.format(d),requestDate)){//请求时间如果是今天
 											setStep(step, lastStep);
 											//获取当前请求时间前一天时间作为请求时间
-											saveStepInfo(step);
+											saveStepInfo(homeTvStep.getText().toString());
 											float distances = getDistances(BaseApplication.getInstance().getStep());
 											homevTvDistance.setText(distances+"");
 											homeTvCalorie.setText(getCalorie(distances));
@@ -203,7 +209,7 @@ public class HomeFragment extends Fragment implements OnClickListener{
 									}
 								}else{
 									setStep(step, lastStep);
-									saveStepInfo(step);
+									saveStepInfo(homeTvStep.getText().toString());
 									float distances = getDistances(BaseApplication.getInstance().getStep());
 									homevTvDistance.setText(distances+"");
 									homeTvCalorie.setText(getCalorie(distances));
@@ -334,6 +340,25 @@ public class HomeFragment extends Fragment implements OnClickListener{
 			value = message2.getBytes("UTF-8");
 			mService.writeRXCharacteristic(value);
 			value = message3.getBytes("UTF-8");
+			mService.writeRXCharacteristic(value);
+			//Update the log with time stamp
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private void sendClearRequest(String date){
+		String message = "#BF,request,"+BaseApplication.devicesId
+				+","+date.substring(0, 1);
+		String message2 = date.substring(1, date.length())+",BF#";
+		byte[] value;
+		try {
+			//send data to service
+			value = message.getBytes("UTF-8");
+			mService.writeRXCharacteristic(value);
+			value = message2.getBytes("UTF-8");
+			mService.writeRXCharacteristic(value);
 			mService.writeRXCharacteristic(value);
 			//Update the log with time stamp
 		} catch (UnsupportedEncodingException e) {

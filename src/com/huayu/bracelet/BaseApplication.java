@@ -13,6 +13,7 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.widget.ImageView;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -22,6 +23,7 @@ import com.huayu.bracelet.vo.UserData;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.display.RoundedBitmapDisplayer;
 
 public class BaseApplication extends Application{
 
@@ -286,4 +288,17 @@ public class BaseApplication extends Application{
 		}  
 		return versionName;  
 	}  
+	
+	public static void getImageByloader(Context context,String url,ImageView imageView,int imageFaile){
+		ImageLoader imageLoader= ImageLoader.getInstance();
+		imageLoader.init(ImageLoaderConfiguration.createDefault(context));
+		DisplayImageOptions options = new DisplayImageOptions.Builder()
+		.showStubImage(imageFaile)			// 设置图片下载期间显示的图片
+		.showImageForEmptyUri(imageFaile)	// 设置图片Uri为空或是错误的时候显示的图片
+		.showImageOnFail(imageFaile)		// 设置图片加载或解码过程中发生错误显示的图片	
+		.cacheInMemory(true)						// 设置下载的图片是否缓存在内存中
+		.displayer(new RoundedBitmapDisplayer(10))	// 设置成圆角图片
+		.build();									// 创建配置过得DisplayImageOption对象	
+		imageLoader.displayImage(url, imageView, options, null);
+	}
 }
