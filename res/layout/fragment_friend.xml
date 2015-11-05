@@ -25,7 +25,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
 
-        <com.handmark.pulltorefresh.library.PullToRefreshScrollView
+       <!--  <com.handmark.pulltorefresh.library.PullToRefreshScrollView
             android:id="@+id/friendPullScrollView"
             android:layout_width="match_parent"
             android:layout_height="match_parent" >
@@ -58,7 +58,7 @@
                             android:id="@+id/friendTvName"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_below="@+id/imageView1"
+                            android:layout_below="@+id/friendIvUser"
                             android:layout_centerHorizontal="true"
                             android:layout_marginTop="20dp"
                             android:text="华宇用户"
@@ -190,12 +190,22 @@
                 <com.huayu.bracelet.view.NoScrollListView
                     android:id="@+id/friendLv"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" >
+                    android:layout_height="match_parent" >
                 </com.huayu.bracelet.view.NoScrollListView>
             </LinearLayout>
-        </com.handmark.pulltorefresh.library.PullToRefreshScrollView>
+        </com.handmark.pulltorefresh.library.PullToRefreshScrollView> -->
 
-        <ImageView
+       
+
+        <com.handmark.pulltorefresh.library.PullToRefreshListView
+            android:id="@+id/friendPullLv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true" >
+        </com.handmark.pulltorefresh.library.PullToRefreshListView>
+        
+         <ImageView
             android:id="@+id/friendIvWrite"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -204,6 +214,7 @@
             android:layout_marginLeft="10dp"
             android:layout_marginBottom="10dp"
             android:src="@drawable/friends_ico_send_normal" />
+
     </RelativeLayout>
 
 </LinearLayout>

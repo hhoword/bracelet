@@ -1,10 +1,13 @@
 package com.huayu.bracelet.http;
 
 import android.annotation.SuppressLint;
+
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.http.protocol.HTTP;
 import org.springframework.http.ContentCodingType;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -115,8 +118,10 @@ public class SpringProxy<T,V> {
 		requestHeaders.setContentType(contentType);
 
 		//		requestHeaders.add("Content-Type", "charset=utf-8");
-		requestHeaders.setContentEncoding(ContentCodingType.valueOf("utf-8"));
-
+		//"charset", HTTP.UTF_8
+		requestHeaders.setContentEncoding(new ContentCodingType("utf-8"));
+		requestHeaders.add("charset","utf-8");
+		requestHeaders.set("charset", "utf-8");
 		//设置接收媒体类型
 		List<MediaType> listtype = new ArrayList<MediaType>();
 		listtype.add(MediaType.TEXT_PLAIN);
@@ -139,21 +144,9 @@ public class SpringProxy<T,V> {
 			requestFactory.setConnectTimeout(30000);
 			restTemplate = new RestTemplate(true);
 			restTemplate.setRequestFactory(requestFactory);
+//			restTemplate.getMessageConverters().remove(new StringHttpMessageConverter());
 			restTemplate.getMessageConverters().add(new GsonHttpMessageConverter());
-			List<HttpMessageConverter<?>> converterList=restTemplate.getMessageConverters();
-			HttpMessageConverter<?> converterTarget = null;
-			for (HttpMessageConverter<?> item : converterList) {
-				if (item.getClass() == StringHttpMessageConverter.class) {
-					converterTarget = item;
-					break;
-				}
-			}
-
-			if (converterTarget != null) {
-				converterList.remove(converterTarget);
-			}
-			HttpMessageConverter<?> converter = new StringHttpMessageConverter(StandardCharsets.UTF_8);
-			converterList.add(converter);
+//			restTemplate.getMessageConverters().add(new UTF8StringHttpMessageConverter());
 		}
 		return restTemplate;
 	}

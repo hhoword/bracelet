@@ -33,7 +33,7 @@ public class BaseApplication extends Application{
 	public static final String DEVICESINFO = "devicesInfo";
 	public static final String DEVICESTEPINFO  = "deviceStepInfo";
 	public static final String DEVICEPOWER = "devicePower";
-	public static final String STEP = "step";
+	public static final String STEP = "stepString";
 	public static final String ASYNCDATE = "asyncDate";
 
 	private SharedPreferences sp;
@@ -60,8 +60,8 @@ public class BaseApplication extends Application{
 
 	private void initImageLoader(){
 		DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder() //
-//		.showImageForEmptyUri(R.drawable.ico_header_default) //
-//		.showImageOnFail(R.drawable.ico_header_default) //
+		//		.showImageForEmptyUri(R.drawable.ico_header_default) //
+		//		.showImageOnFail(R.drawable.ico_header_default) //
 		.cacheInMemory(true) //
 		.cacheOnDisk(true) //
 		.build();//
@@ -74,7 +74,7 @@ public class BaseApplication extends Application{
 		.build();//
 		ImageLoader.getInstance().init(config);
 	}
-	
+
 	public void setUserInfo(UserData info){
 		String user = gson.toJson(info);
 		editor.putString(USERINFO, user);
@@ -101,7 +101,7 @@ public class BaseApplication extends Application{
 				new TypeToken<List<DevicesInfo>>(){}.getType());
 		return devicesInfos;
 	}
-	
+
 	public void setDeviceStepInfo(List<DeviceStepInfo> deviceStepInfos){
 		String devices = gson.toJson(deviceStepInfos);
 		editor.putString(DEVICESTEPINFO, devices);
@@ -127,12 +127,54 @@ public class BaseApplication extends Application{
 	}
 
 	public void  setStep(int step){
-		editor.putInt(STEP, step);
+		boolean isHasUser = false;
+		SimpleDateFormat ss = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");//12小时制  
+		String deviceSInfo = sp.getString(STEP, "");
+		List<DeviceStepInfo> deviceStepInfos = gson.fromJson(deviceSInfo,
+				new TypeToken<List<DeviceStepInfo>>(){}.getType());
+		if(deviceStepInfos == null){
+			deviceStepInfos = new ArrayList<DeviceStepInfo>();
+		}
+		for(int i = 0; i< deviceStepInfos.size(); i++){
+			DeviceStepInfo deviceStepInfo  = deviceStepInfos.get(i);
+			if(deviceStepInfo.getUid().equals(BaseApplication.getInstance()
+					.getUserData().getData().getUserinfo().getId()+"")){
+				isHasUser = true;
+				deviceStepInfos.get(i).setStepcount(step+"");
+				deviceStepInfos.get(i).setDatetime(ss.format(new Date()));
+			}
+		}
+		if(!isHasUser){
+			DeviceStepInfo deviceStepInfo = new DeviceStepInfo();
+			deviceStepInfo.setUid(BaseApplication.getInstance()
+					.getUserData().getData().getUserinfo().getId()+"");
+			deviceStepInfo.setDatetime(ss.format(new Date()));
+			deviceStepInfo.setStepcount(step+"");
+			deviceStepInfos.add(deviceStepInfo);
+		}
+		editor.putString(STEP, gson.toJson(deviceStepInfos));
 		editor.commit();
 	}
 
 	public int getStep(){
-		int step = sp.getInt(STEP, 0);
+		int step = 0;
+		SimpleDateFormat ss = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");//12小时制 
+		String deviceSInfo = sp.getString(STEP, "");
+		List<DeviceStepInfo> deviceStepInfos = gson.fromJson(deviceSInfo,
+				new TypeToken<List<DeviceStepInfo>>(){}.getType());
+		if(deviceStepInfos == null){
+			return step;
+		}
+		for(int i = 0; i< deviceStepInfos.size(); i++){
+			DeviceStepInfo deviceStepInfo  = deviceStepInfos.get(i);
+			if(deviceStepInfo.getUid().equals(BaseApplication.getInstance()
+					.getUserData().getData().getUserinfo().getId()+"")){
+				String date = deviceStepInfos.get(i).getDatetime();
+				if(isSameday(ss.format(new Date()), date)){
+					step = Integer.parseInt(deviceStepInfos.get(i).getStepcount());
+				}
+			}
+		}
 		return step;
 	}
 
@@ -181,28 +223,28 @@ public class BaseApplication extends Application{
 		return istoday;
 
 	}
-	
+
 	/**
 	 * 获取指定日期的前一天
 	 * @param specifiedDay
 	 * @return
 	 */
 	public static String getSpecifiedDayBefore(String specifiedDay) {//可以用new Date().toLocalString()传递参数  
-        Calendar c = Calendar.getInstance();  
-        Date date = null;  
-        try {  
-            date = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(specifiedDay);  
-        } catch (ParseException e) {  
-            e.printStackTrace();  
-        }  
-        c.setTime(date);  
-        int day = c.get(Calendar.DATE);  
-        c.set(Calendar.DATE, day - 1);  
-  
-        String dayBefore = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(c  
-                .getTime());  
-        return dayBefore;  
-    }  
+		Calendar c = Calendar.getInstance();  
+		Date date = null;  
+		try {  
+			date = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").parse(specifiedDay);  
+		} catch (ParseException e) {  
+			e.printStackTrace();  
+		}  
+		c.setTime(date);  
+		int day = c.get(Calendar.DATE);  
+		c.set(Calendar.DATE, day - 1);  
+
+		String dayBefore = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(c  
+				.getTime());  
+		return dayBefore;  
+	}  
 
 	/**
 	 * 比较time1与time2时间差是否超过一天
@@ -260,7 +302,7 @@ public class BaseApplication extends Application{
 			System.out.println("c1大于c2");*/
 		return result;
 	}
-	
+
 	/** 
 	 * 获取软件版本号 
 	 *  
@@ -277,7 +319,7 @@ public class BaseApplication extends Application{
 		}  
 		return versionCode;  
 	}  
-	
+
 	public static String getVersionName(Context context){  
 		String versionName = "";  
 		try {  
@@ -288,7 +330,7 @@ public class BaseApplication extends Application{
 		}  
 		return versionName;  
 	}  
-	
+
 	public static void getImageByloader(Context context,String url,ImageView imageView,int imageFaile){
 		ImageLoader imageLoader= ImageLoader.getInstance();
 		imageLoader.init(ImageLoaderConfiguration.createDefault(context));
@@ -297,8 +339,15 @@ public class BaseApplication extends Application{
 		.showImageForEmptyUri(imageFaile)	// 设置图片Uri为空或是错误的时候显示的图片
 		.showImageOnFail(imageFaile)		// 设置图片加载或解码过程中发生错误显示的图片	
 		.cacheInMemory(true)						// 设置下载的图片是否缓存在内存中
-		.displayer(new RoundedBitmapDisplayer(10))	// 设置成圆角图片
+		.displayer(new RoundedBitmapDisplayer(60))	// 设置成圆角图片
 		.build();									// 创建配置过得DisplayImageOption对象	
 		imageLoader.displayImage(url, imageView, options, null);
+	}
+
+	// 使用系统当前日期加以调整作为照片的名称
+	public static String getPhotoFileName() {
+		Date date = new Date(System.currentTimeMillis());
+		SimpleDateFormat dateFormat = new SimpleDateFormat("'IMG'_yyyyMMdd_HHmmss");
+		return dateFormat.format(date) + ".jpg";
 	}
 }

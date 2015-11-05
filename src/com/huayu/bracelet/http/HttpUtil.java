@@ -11,12 +11,15 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 import android.os.Handler;
+import android.util.Base64;
 
 import com.huayu.bracelet.activity.IOnDataListener;
 import com.huayu.bracelet.vo.DeviceStepInfo;
 import com.huayu.bracelet.vo.ListUserZoonInfo;
 import com.huayu.bracelet.vo.UpdateInfo;
 import com.huayu.bracelet.vo.UserData;
+import com.huayu.bracelet.vo.UserInfo;
+import com.huayu.bracelet.vo.UserPic;
 import com.huayu.bracelet.vo.WeeKAvgStep;
 import com.huayu.bracelet.vo.ZoonInfo;
 
@@ -26,9 +29,9 @@ public class HttpUtil {
 	public static ExecutorService fixedThreadPool = Executors.newFixedThreadPool(5);
 	private static final int post = 0;
 	private static final int get = 1;
-//	public static final String url = "http://192.168.0.109:54242";
+	//	public static final String url = "http://192.168.0.109:54242";
 	public static final String url = "http://203.195.137.93:54242";
-//	private String url2 = "http://14.23.85.254:9000/my1";
+	//		private String url2 = "http://14.23.85.254:9000/my1";
 
 	public HttpUtil() {
 		// TODO Auto-generated constructor stub
@@ -58,7 +61,7 @@ public class HttpUtil {
 		httpThread.setDataListener(iOnDataListener);
 		fixedThreadPool.execute(httpThread);
 	}
-	
+
 	public void postStepInfo(List<DeviceStepInfo> deviceStepInfos,IOnDataListener<WeeKAvgStep> dataListener){
 		HttpThread<WeeKAvgStep, List<DeviceStepInfo>> httpThread = new HttpThread<WeeKAvgStep,
 				List<DeviceStepInfo>>(url+"/Step/UpdateStep", post, deviceStepInfos, WeeKAvgStep.class,
@@ -66,7 +69,7 @@ public class HttpUtil {
 		httpThread.setDataListener(dataListener);
 		fixedThreadPool.execute(httpThread);
 	}
-	
+
 	public void getFriendCircle(String id,String index,String pagesize,
 			IOnDataListener<ListUserZoonInfo> dataListener){
 		MultiValueMap<String, String> data = new LinkedMultiValueMap<String, String>();
@@ -79,13 +82,13 @@ public class HttpUtil {
 		httpThread.setDataListener(dataListener);
 		fixedThreadPool.execute(httpThread);
 	}
-	
-	
+
+
 	public void postFriendTalk(String id,String text,List<String> files,
 			IOnDataListener<ZoonInfo> dataListener){
 		MultiValueMap<String, Object> data = new LinkedMultiValueMap<String, Object>();
 		data.add("uid", id);
-		data.add("text", text);
+		data.add("text", Base64.encodeToString(text.getBytes(), Base64.DEFAULT));
 		int size = files.size();
 		for(int i = 0 ; i<size ; i++){
 			Resource resource = new FileSystemResource(files.get(i));
@@ -97,15 +100,35 @@ public class HttpUtil {
 		httpThread.setDataListener(dataListener);
 		fixedThreadPool.execute(httpThread);
 	}
-	
-	
-	public void getCheckUpdate(IOnDataListener<UpdateInfo> dataListener){
-		HttpThread<UpdateInfo, String> httpThread = new HttpThread<UpdateInfo, String>(
-						url+"/CheckUpdate",get, null,UpdateInfo.class,MediaType.TEXT_PLAIN);
+
+	public void postUserPic(String id,String file,
+			IOnDataListener<UserPic> dataListener){
+		MultiValueMap<String, Object> data = new LinkedMultiValueMap<String, Object>();
+		data.add("uid", id);
+		Resource resource = new FileSystemResource(file);
+		data.add("pic", resource);
+		HttpThread<UserPic, MultiValueMap<String, Object>> httpThread = 
+				new HttpThread<UserPic, MultiValueMap<String, Object>>(
+						url+"User/UpdateImg",post, data,UserPic.class,MediaType.MULTIPART_FORM_DATA);
 		httpThread.setDataListener(dataListener);
 		fixedThreadPool.execute(httpThread);
 	}
-	
+
+	public void postUserInfo(UserInfo user ,IOnDataListener<UserData> dataListener){
+		HttpThread<UserData, UserInfo> httpThread = new HttpThread<UserData,
+				UserInfo>(url+"/User/Update", post, user, UserData.class,
+						MediaType.APPLICATION_JSON);
+		httpThread.setDataListener(dataListener);
+		fixedThreadPool.execute(httpThread);
+	}
+
+	public void getCheckUpdate(IOnDataListener<UpdateInfo> dataListener){
+		HttpThread<UpdateInfo, String> httpThread = new HttpThread<UpdateInfo, String>(
+				url+"/CheckUpdate",get, null,UpdateInfo.class,MediaType.TEXT_PLAIN);
+		httpThread.setDataListener(dataListener);
+		fixedThreadPool.execute(httpThread);
+	}
+
 	/*public void test(String username ,String pwd,
 			IOnDataListener<UserInfo> dataListener){
 		MultiValueMap<String, String> data = new LinkedMultiValueMap<String, String>();
@@ -137,14 +160,14 @@ public class HttpUtil {
 		public HttpThread(String url,int type,V v,Class<T> clazz, MediaType mediaType) {
 			// TODO Auto-generated constructor stub
 			this.type = type;
-//			this.clazz =  (Class<T>) ((ParameterizedType) super.getClass()  
-//	                .getGenericSuperclass()).getActualTypeArguments()[0];  
+			//			this.clazz =  (Class<T>) ((ParameterizedType) super.getClass()  
+			//	                .getGenericSuperclass()).getActualTypeArguments()[0];  
 			this.clazz = clazz;
 			this.v = v;
 			this.url = url;
 			this.mediaType = mediaType;
 		}
-		
+
 		@Override
 		public void run() {
 			// TODO Auto-generated method stub
@@ -180,5 +203,5 @@ public class HttpUtil {
 			this.dataListener = dataListener;
 		}
 	}
-	
+
 }

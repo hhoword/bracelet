@@ -1,9 +1,11 @@
 package com.huayu.bracelet.vo;
 
+import java.util.List;
+
 public class ZoonInfo extends MessageVo<ZoonInfo>{
 	private int id;
 	private int uid;
-	private String img_url;
+	private List<String> img_url;
 	private String text;
 	private String datatime;
 	public int getId() {
@@ -18,12 +20,6 @@ public class ZoonInfo extends MessageVo<ZoonInfo>{
 	public void setUid(int uid) {
 		this.uid = uid;
 	}
-	public String getImg_url() {
-		return img_url;
-	}
-	public void setImg_url(String img_url) {
-		this.img_url = img_url;
-	}
 	public String getText() {
 		return text;
 	}
@@ -35,6 +31,12 @@ public class ZoonInfo extends MessageVo<ZoonInfo>{
 	}
 	public void setDatatime(String datatime) {
 		this.datatime = datatime;
+	}
+	public List<String> getImg_url() {
+		return img_url;
+	}
+	public void setImg_url(List<String> img_url) {
+		this.img_url = img_url;
 	}
 	
 	

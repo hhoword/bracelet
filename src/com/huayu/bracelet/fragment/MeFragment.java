@@ -16,6 +16,7 @@ import com.huayu.bracelet.BaseApplication;
 import com.huayu.bracelet.R;
 import com.huayu.bracelet.activity.BindActivity;
 import com.huayu.bracelet.activity.UserInfoActivity;
+import com.huayu.bracelet.http.HttpUtil;
 import com.huayu.bracelet.vo.UserData;
 
 public class MeFragment extends Fragment implements OnClickListener{
@@ -26,6 +27,7 @@ public class MeFragment extends Fragment implements OnClickListener{
 	private TextView meTvPosition;
 	private TextView meTvLevel;
 	private TextView meTvHNum;
+	private TextView meTvId;
 	private ImageView meIvUser;
 	private Button meBtnInfo;
 	private LinearLayout meLayoutChange;
@@ -42,6 +44,7 @@ public class MeFragment extends Fragment implements OnClickListener{
 		meTvLevel= (TextView)view.findViewById(R.id.meTvLevel);
 		meTvPosition = (TextView)view.findViewById(R.id.meTvPosition);
 		meTvHNum = (TextView)view.findViewById(R.id.meTvHNum);
+		meTvId = (TextView)view.findViewById(R.id.meTvId);
 		meLayoutChange = (LinearLayout)view.findViewById(R.id.meLayoutChange);
 		meBtnInfo = (Button)view.findViewById(R.id.meBtnInfo);
 		return view;
@@ -54,14 +57,15 @@ public class MeFragment extends Fragment implements OnClickListener{
 		if(!hidden){
 			meTvVersion.setText(BaseApplication.getVersionName(getActivity()));
 			meTvPower.setText(BaseApplication.getInstance().getPower());
+			meTvId.setText(BaseApplication.devicesId);
 			meLayoutChange.setOnClickListener(this);
 			meBtnInfo.setOnClickListener(this);
 			UserData info = BaseApplication.getInstance().getUserData();
 			if(info!=null){
 				meTvName.setText(info.getData().getUserinfo().getName());
 				meTvLevel.setText(info.getData().getUserinfo().getLevel()+"");
-				meTvPosition.setText(info.getData().getUserinfo().getCity());
-				BaseApplication.getImageByloader(getActivity(), info.getData().getUserinfo()
+				meTvPosition.setText(info.getData().getUserinfo().getCity()+"");
+				BaseApplication.getImageByloader(getActivity(), HttpUtil.url+"/"+info.getData().getUserinfo()
 						.getProfile_img_url(), meIvUser, R.drawable.ico_sex_male_100);
 			}
 		}

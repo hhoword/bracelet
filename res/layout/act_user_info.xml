@@ -39,9 +39,45 @@
             android:orientation="vertical" >
 
             <LinearLayout
+                android:id="@+id/UserLayoutPic"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_marginTop="30dp"
+                android:background="@color/white"
+                android:gravity="center_vertical"
+                android:padding="3dp" >
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:src="@drawable/user_ico_camera" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_weight="1"
+                    android:text="头像"
+                    android:textSize="16sp" />
+
+                <ImageView
+                    android:id="@+id/userIvPic"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:layout_marginRight="20dp"
+                    android:src="@drawable/ico_sex_male_100" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/grap_light" />
+
+            <LinearLayout
+                android:id="@+id/userLyName"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
                 android:background="@color/white"
                 android:gravity="center_vertical"
                 android:padding="3dp" >
@@ -66,12 +102,14 @@
                     android:gravity="right"
                     android:paddingRight="20dp" />
             </LinearLayout>
-            <View
+
+            <View
                 android:layout_width="match_parent"
                 android:layout_height="1px"
                 android:background="@color/grap_light" />
 
             <LinearLayout
+                android:id="@+id/userLySex"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:background="@color/white"
@@ -105,6 +143,7 @@
                 android:background="@color/grap_light" />
 
             <LinearLayout
+                android:id="@+id/userLyHeight"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:background="@color/white"
@@ -138,6 +177,7 @@
                 android:background="@color/grap_light" />
 
             <LinearLayout
+                android:id="@+id/userLyWeight"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:background="@color/white"
@@ -169,7 +209,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="1px"
                 android:background="@color/grap_light" />
-            
+
             <LinearLayout
                 android:id="@+id/userLyLogout"
                 android:layout_width="match_parent"
@@ -179,7 +219,6 @@
                 android:gravity="center"
                 android:padding="3dp" >
 
-
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -187,9 +226,7 @@
                     android:text="退出登录"
                     android:textColor="@color/red"
                     android:textSize="16sp" />
-
             </LinearLayout>
-
         </LinearLayout>
     </ScrollView>
 

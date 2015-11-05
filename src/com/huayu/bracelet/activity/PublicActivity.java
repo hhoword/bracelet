@@ -1,9 +1,7 @@
 package com.huayu.bracelet.activity;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import android.app.Activity;
@@ -60,7 +58,7 @@ public class PublicActivity extends PActivity implements OnClickListener{
 			file.mkdirs();
 		}
 		tempFile = new File(Environment.getExternalStorageDirectory(),
-				"huayu/"+getPhotoFileName());
+				"huayu/"+BaseApplication.getPhotoFileName());
 		
 		iamgePaths = new ArrayList<String>();
 //		showImagePaths = new ArrayList<String>();
@@ -111,13 +109,6 @@ public class PublicActivity extends PActivity implements OnClickListener{
 		.show();
 	}
 
-	// 使用系统当前日期加以调整作为照片的名称
-	public static String getPhotoFileName() {
-		Date date = new Date(System.currentTimeMillis());
-		SimpleDateFormat dateFormat = new SimpleDateFormat("'IMG'_yyyyMMdd_HHmmss");
-		return dateFormat.format(date) + ".jpg";
-	}
-
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		// TODO Auto-generated method stub
@@ -127,7 +118,8 @@ public class PublicActivity extends PActivity implements OnClickListener{
 //			showImagePaths.add("file:/" +tempFile.getAbsolutePath());
 			MyAdapter.mSelectedImage.add(tempFile.getAbsolutePath());
 			adapter.notifyDataSetChanged();
-			tempFile = new File(Environment.getExternalStorageDirectory(),getPhotoFileName());
+			tempFile = new File(Environment.getExternalStorageDirectory(),
+					BaseApplication.getPhotoFileName());
 		}
 	}
 
