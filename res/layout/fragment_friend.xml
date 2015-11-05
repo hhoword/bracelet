@@ -47,7 +47,7 @@
                         android:padding="10dp" >
 
                         <ImageView
-                            android:id="@+id/imageView1"
+                            android:id="@+id/friendIvUser"
                             android:layout_width="80dp"
                             android:layout_height="80dp"
                             android:layout_centerInParent="true"
@@ -55,7 +55,7 @@
                             android:src="@drawable/ico_sex_male_100" />
 
                         <TextView
-                            android:id="@+id/textView3"
+                            android:id="@+id/friendTvName"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_below="@+id/imageView1"

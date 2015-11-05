@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.ScrollView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
@@ -32,7 +33,13 @@ public class FriendCricleFragment extends Fragment implements OnClickListener{
 
 	private NoScrollListView friendLv;
 	private PullToRefreshScrollView friendPullScrollView;
+	private ImageView friendIvUser;
+	private TextView friendTvName;
 	private ImageView friendIvWrite;
+	private TextView friendTvFans;
+	private TextView friendTvConcern;
+	private TextView friendTvLevel;
+	private TextView friendTvHNum;
 	private ListItemAdapter adapter;
 	private int pageSize=20;
 	private int index=0;
@@ -44,8 +51,14 @@ public class FriendCricleFragment extends Fragment implements OnClickListener{
 		// TODO Auto-generated method stub
 		View view = inflater.inflate(R.layout.fragment_friend, null);
 		friendPullScrollView = (PullToRefreshScrollView)view.findViewById(R.id.friendPullScrollView);
+		friendTvName = (TextView)view.findViewById(R.id.friendTvName);
 		friendLv  = (NoScrollListView)view.findViewById(R.id.friendLv);
+		friendIvUser = (ImageView)view.findViewById(R.id.friendIvUser);
 		friendIvWrite = (ImageView)view.findViewById(R.id.friendIvWrite);
+		friendTvFans = (TextView)view.findViewById(R.id.friendTvFans);
+		friendTvConcern = (TextView)view.findViewById(R.id.friendTvConcern);
+		friendTvLevel = (TextView)view.findViewById(R.id.friendTvLevel);
+		friendTvHNum = (TextView)view.findViewById(R.id.friendTvHNum);
 		friendIvWrite.setOnClickListener(this);
 		friendPullScrollView.setMode(Mode.BOTH);  
 		adapter = new ListItemAdapter(getActivity(), null);
@@ -66,7 +79,6 @@ public class FriendCricleFragment extends Fragment implements OnClickListener{
 					index ++;
 					getCircleData();
 				}
-				friendPullScrollView.onRefreshComplete();
 			}
 		});
 		return view;
@@ -79,7 +91,6 @@ public class FriendCricleFragment extends Fragment implements OnClickListener{
 		listUserZoonInfo = new ArrayList<ListUserZoonInfo>();
 		adapter = new ListItemAdapter(getActivity(), listUserZoonInfo);
 		friendLv.setAdapter(adapter);
-//		getCircleData();
 	}
 	
 	@Override
@@ -88,6 +99,16 @@ public class FriendCricleFragment extends Fragment implements OnClickListener{
 		super.onHiddenChanged(hidden);
 		if(!hidden){
 			getCircleData();
+			UserData info = BaseApplication.getInstance().getUserData();
+			if(info!=null){
+				friendTvName.setText(info.getData().getUserinfo().getName());
+				friendTvFans.setText(info.getData().getFollowerCount()+"");
+				friendTvConcern.setText(info.getData().getConcernedCount()+"");
+				friendTvLevel.setText(info.getData().getUserinfo().getLevel()+"");
+//				friendTvHNum.setText(info.getData().getUserinfo().get);
+				BaseApplication.getImageByloader(getActivity(), info.getData().getUserinfo().getProfile_img_url(),
+						friendIvUser, R.drawable.ico_sex_male_100);
+			}
 		}
 	}
 	
@@ -100,6 +121,7 @@ public class FriendCricleFragment extends Fragment implements OnClickListener{
 					@Override
 					public void onDataResult(ListUserZoonInfo t) {
 						// TODO Auto-generated method stub
+						friendPullScrollView.onRefreshComplete();
 						if(t!=null){
 							if(t.getData()!=null){
 								listUserZoonInfo.addAll(t.getData());

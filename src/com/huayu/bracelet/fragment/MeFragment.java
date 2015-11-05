@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -22,6 +23,10 @@ public class MeFragment extends Fragment implements OnClickListener{
 	private TextView meTvPower;
 	private TextView meTvVersion;
 	private TextView meTvName;
+	private TextView meTvPosition;
+	private TextView meTvLevel;
+	private TextView meTvHNum;
+	private ImageView meIvUser;
 	private Button meBtnInfo;
 	private LinearLayout meLayoutChange;
 	
@@ -33,6 +38,10 @@ public class MeFragment extends Fragment implements OnClickListener{
 		meTvPower = (TextView)view.findViewById(R.id.meTvPower);
 		meTvVersion= (TextView)view.findViewById(R.id.meTvVersion);
 		meTvName= (TextView)view.findViewById(R.id.meTvName);
+		meIvUser = (ImageView)view.findViewById(R.id.meIvUser);
+		meTvLevel= (TextView)view.findViewById(R.id.meTvLevel);
+		meTvPosition = (TextView)view.findViewById(R.id.meTvPosition);
+		meTvHNum = (TextView)view.findViewById(R.id.meTvHNum);
 		meLayoutChange = (LinearLayout)view.findViewById(R.id.meLayoutChange);
 		meBtnInfo = (Button)view.findViewById(R.id.meBtnInfo);
 		return view;
@@ -50,6 +59,10 @@ public class MeFragment extends Fragment implements OnClickListener{
 			UserData info = BaseApplication.getInstance().getUserData();
 			if(info!=null){
 				meTvName.setText(info.getData().getUserinfo().getName());
+				meTvLevel.setText(info.getData().getUserinfo().getLevel()+"");
+				meTvPosition.setText(info.getData().getUserinfo().getCity());
+				BaseApplication.getImageByloader(getActivity(), info.getData().getUserinfo()
+						.getProfile_img_url(), meIvUser, R.drawable.ico_sex_male_100);
 			}
 		}
 	}
